@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpelExperter - Premier League Betting Predictions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">⚽</span>
+                <span class="logo-text">SpelExperter</span>
+            </div>
+            <nav class="nav">
+                <a href="#" class="nav-link active">Premier League</a>
+                <a href="#" class="nav-link">La Liga</a>
+                <a href="#" class="nav-link">Bundesliga</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <section class="hero">
+                <h1>Premier League Predictions</h1>
+                <p>Data-driven betting insights based on statistics and probability analysis</p>
+            </section>
+
+            <!-- Filters -->
+            <section class="filters-section">
+                <h2>Filters</h2>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Favorite Odds (max)</label>
+                        <input type="number" id="maxFavoriteOdds" value="1.93" step="0.01" min="1.01" max="3.00">
+                    </div>
+                    <div class="filter-group">
+                        <label>BTTS Odds (max)</label>
+                        <input type="number" id="maxBttsOdds" value="1.70" step="0.01" min="1.01" max="3.00">
+                    </div>
+                    <div class="filter-group">
+                        <label>Over 2.5 Odds (max)</label>
+                        <input type="number" id="maxOver25Odds" value="1.70" step="0.01" min="1.01" max="3.00">
+                    </div>
+                    <div class="filter-group">
+                        <label>Min Win Probability %</label>
+                        <input type="number" id="minWinProb" value="50" step="1" min="0" max="100">
+                    </div>
+                    <button id="applyFilters" class="btn-primary">Apply Filters</button>
+                </div>
+            </section>
+
+            <!-- Stats Summary -->
+            <section class="stats-summary">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalMatches">0</div>
+                    <div class="stat-label">Matches Found</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-value" id="avgWinProb">0%</div>
+                    <div class="stat-label">Avg Win Probability</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="bttsMatches">0</div>
+                    <div class="stat-label">BTTS Qualified</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="over25Matches">0</div>
+                    <div class="stat-label">Over 2.5 Qualified</div>
+                </div>
+            </section>
+
+            <!-- Predictions Table -->
+            <section class="predictions-section">
+                <h2>Upcoming Matches</h2>
+                <div class="table-wrapper">
+                    <table class="predictions-table" id="predictionsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Match</th>
+                                <th>Favorite</th>
+                                <th class="sortable" data-sort="winProb">Win Prob %</th>
+                                <th>Odds</th>
+                                <th class="sortable" data-sort="btts">BTTS</th>
+                                <th class="sortable" data-sort="over25">Over 2.5</th>
+                                <th>Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matchesBody">
+                            <tr>
+                                <td colspan="8" class="loading">Loading predictions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Team Statistics -->
+            <section class="team-stats-section">
+                <h2>2024/25 Season Statistics</h2>
+                <div class="team-stats-grid" id="teamStatsGrid">
+                    <!-- Team stats will be loaded here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>SpelExperter.com - Data-driven sports predictions</p>
+            <p class="disclaimer">Gambling involves risk. Please bet responsibly. 18+</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

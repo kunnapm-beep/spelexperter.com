@@ -1,0 +1,498 @@
+/* SpelExperter - Sports Betting Predictions */
+
+:root {
+    --primary: #10b981;
+    --primary-dark: #059669;
+    --secondary: #3b82f6;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --bg-dark: #0f172a;
+    --bg-card: #1e293b;
+    --bg-hover: #334155;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --success: #22c55e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header */
+.header {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    font-size: 28px;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.nav {
+    display: flex;
+    gap: 5px;
+}
+
+.nav-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--text);
+    background: var(--bg-hover);
+}
+
+.nav-link.active {
+    color: var(--primary);
+}
+
+/* Main */
+.main {
+    padding: 30px 0;
+}
+
+/* Hero */
+.hero {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.hero h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    color: var(--text-muted);
+    font-size: 18px;
+}
+
+/* Filters */
+.filters-section {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.filters-section h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: var(--text-muted);
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filter-group label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.filter-group input {
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 14px;
+    width: 140px;
+}
+
+.filter-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+/* Stats Summary */
+.stats-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-card.highlight {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.stat-card.highlight .stat-label {
+    color: rgba(255,255,255,0.8);
+}
+
+/* Predictions Table */
+.predictions-section {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.predictions-section h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.predictions-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.predictions-table th {
+    text-align: left;
+    padding: 12px 15px;
+    background: var(--bg-dark);
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+}
+
+.predictions-table th.sortable {
+    cursor: pointer;
+}
+
+.predictions-table th.sortable:hover {
+    color: var(--primary);
+}
+
+.predictions-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+.predictions-table tr:hover {
+    background: var(--bg-hover);
+}
+
+.predictions-table .loading {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px;
+}
+
+/* Match info */
+.match-teams {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.team-home {
+    font-weight: 600;
+}
+
+.team-away {
+    color: var(--text-muted);
+}
+
+.team-vs {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-success {
+    background: rgba(34, 197, 94, 0.2);
+    color: var(--success);
+}
+
+.badge-warning {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--warning);
+}
+
+.badge-danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+.badge-primary {
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--secondary);
+}
+
+/* Win probability bar */
+.prob-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.prob-value {
+    font-weight: 700;
+    min-width: 45px;
+}
+
+.prob-visual {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-dark);
+    border-radius: 4px;
+    overflow: hidden;
+    min-width: 60px;
+}
+
+.prob-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 4px;
+    transition: width 0.3s;
+}
+
+.prob-fill.high {
+    background: var(--success);
+}
+
+.prob-fill.medium {
+    background: var(--warning);
+}
+
+.prob-fill.low {
+    background: var(--danger);
+}
+
+/* Odds display */
+.odds {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.odds.good {
+    color: var(--success);
+}
+
+.odds.ok {
+    color: var(--warning);
+}
+
+/* Confidence indicator */
+.confidence {
+    display: flex;
+    gap: 3px;
+}
+
+.confidence-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+}
+
+.confidence-dot.active {
+    background: var(--primary);
+}
+
+.confidence-dot.active.high {
+    background: var(--success);
+}
+
+/* Team Stats Section */
+.team-stats-section {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.team-stats-section h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.team-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.team-stat-card {
+    background: var(--bg-dark);
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.team-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.team-name {
+    font-weight: 600;
+}
+
+.team-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 13px;
+}
+
+.team-stat {
+    text-align: center;
+}
+
+.team-stat-value {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.team-stat-label {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+/* Footer */
+.footer {
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    padding: 30px 0;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.footer p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.footer .disclaimer {
+    font-size: 12px;
+    margin-top: 10px;
+    color: var(--warning);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header .container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .hero h1 {
+        font-size: 28px;
+    }
+
+    .filters {
+        flex-direction: column;
+    }
+
+    .filter-group input {
+        width: 100%;
+    }
+
+    .predictions-table {
+        font-size: 12px;
+    }
+
+    .predictions-table th,
+    .predictions-table td {
+        padding: 10px 8px;
+    }
+}
