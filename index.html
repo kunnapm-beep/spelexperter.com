@@ -8,11 +8,25 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Live Ticker -->
+    <div class="live-ticker">
+        <div class="container">
+            <div class="ticker-wrapper">
+                <div class="ticker-label">LIVE</div>
+                <div class="ticker-content">
+                    <div class="ticker-track" id="tickerTrack">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <header class="header">
         <div class="container">
             <div class="logo">
                 <span class="logo-icon">⚽</span>
-                <span class="logo-text">SpelExperter</span>
+                <span class="logo-text gradient-text">SpelExperter</span>
             </div>
             <nav class="nav">
                 <a href="#" class="nav-link active">Premier League</a>
@@ -96,6 +110,14 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </section>
+
+            <!-- Latest News -->
+            <section class="news-section">
+                <h2>📰 Latest Football News</h2>
+                <div class="news-grid" id="newsGrid">
+                    <!-- News loaded by JS -->
                 </div>
             </section>
 

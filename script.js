@@ -169,12 +169,106 @@ const maxBttsOddsInput = document.getElementById('maxBttsOdds');
 const maxOver25OddsInput = document.getElementById('maxOver25Odds');
 const minWinProbInput = document.getElementById('minWinProb');
 
+// Live matches data (simulated real-time)
+const liveMatches = [
+    { home: "Liverpool", away: "Chelsea", score: "2-1", time: "67'", status: "live" },
+    { home: "Arsenal", away: "Man City", score: "1-1", time: "45+2'", status: "live" },
+    { home: "Newcastle", away: "Wolves", score: "3-0", time: "FT", status: "finished" },
+    { home: "Brighton", away: "Everton", score: "2-2", time: "88'", status: "live" },
+    { home: "Aston Villa", away: "Fulham", score: "1-0", time: "FT", status: "finished" },
+    { home: "Tottenham", away: "West Ham", score: "0-0", time: "23'", status: "live" },
+];
+
+// News data
+const newsItems = [
+    {
+        title: "Liverpool extends winning streak to 8 matches",
+        summary: "The Reds continue dominant form with clinical finishing and solid defense.",
+        source: "Sky Sports",
+        time: "2h ago"
+    },
+    {
+        title: "Man City injury crisis deepens ahead of derby",
+        summary: "Guardiola confirms three key players will miss crucial Manchester derby fixture.",
+        source: "BBC Sport",
+        time: "4h ago"
+    },
+    {
+        title: "Arsenal's title challenge gains momentum",
+        summary: "Gunners move to second place after impressive victory at Stamford Bridge.",
+        source: "The Athletic",
+        time: "5h ago"
+    },
+    {
+        title: "VAR controversy in Premier League weekend",
+        summary: "Multiple decisions spark debate as referees come under scrutiny once again.",
+        source: "ESPN",
+        time: "6h ago"
+    }
+];
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    renderTicker();
+    renderNews();
     applyFilters();
     renderTeamStats();
     setupSorting();
+
+    // Update ticker every 30 seconds
+    setInterval(updateTickerScores, 30000);
 });
+
+// Render live ticker
+function renderTicker() {
+    const track = document.getElementById('tickerTrack');
+    const items = liveMatches.map(match => `
+        <div class="ticker-item">
+            <span class="ticker-teams">${match.home} vs ${match.away}</span>
+            <span class="ticker-score">${match.score}</span>
+            <span class="${match.status === 'live' ? 'ticker-live' : 'ticker-time'}">${match.time}</span>
+        </div>
+    `).join('');
+
+    // Duplicate for seamless loop
+    track.innerHTML = items + items;
+}
+
+// Simulate score updates
+function updateTickerScores() {
+    liveMatches.forEach(match => {
+        if (match.status === 'live') {
+            // Random chance to update score
+            if (Math.random() < 0.1) {
+                const scores = match.score.split('-');
+                const team = Math.random() < 0.5 ? 0 : 1;
+                scores[team] = parseInt(scores[team]) + 1;
+                match.score = scores.join('-');
+            }
+            // Update time
+            const currentMin = parseInt(match.time);
+            if (!isNaN(currentMin) && currentMin < 90) {
+                match.time = (currentMin + 1) + "'";
+            }
+        }
+    });
+    renderTicker();
+}
+
+// Render news
+function renderNews() {
+    const grid = document.getElementById('newsGrid');
+    grid.innerHTML = newsItems.map(item => `
+        <div class="news-card">
+            <h3>${item.title}</h3>
+            <p>${item.summary}</p>
+            <div class="news-meta">
+                <span class="news-source">${item.source}</span>
+                <span>${item.time}</span>
+            </div>
+        </div>
+    `).join('');
+}
 
 // Apply filters
 applyFiltersBtn.addEventListener('click', applyFilters);
