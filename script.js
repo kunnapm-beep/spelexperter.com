@@ -2,152 +2,124 @@
 // Data-driven betting insights
 
 // Premier League 2024/25 Team Statistics (based on real data)
+// injuries = number of injured players (lower = better)
 const teamStats = {
-    "Manchester City": { bttsRate: 54, over25Rate: 62, homeWinRate: 75, awayWinRate: 55, goalsFor: 2.3, goalsAgainst: 0.9 },
-    "Arsenal": { bttsRate: 58, over25Rate: 65, homeWinRate: 72, awayWinRate: 50, goalsFor: 2.1, goalsAgainst: 0.8 },
-    "Liverpool": { bttsRate: 62, over25Rate: 70, homeWinRate: 78, awayWinRate: 58, goalsFor: 2.4, goalsAgainst: 1.0 },
-    "Chelsea": { bttsRate: 65, over25Rate: 68, homeWinRate: 55, awayWinRate: 42, goalsFor: 1.8, goalsAgainst: 1.2 },
-    "Manchester United": { bttsRate: 69, over25Rate: 58, homeWinRate: 50, awayWinRate: 38, goalsFor: 1.5, goalsAgainst: 1.3 },
-    "Tottenham": { bttsRate: 64, over25Rate: 72, homeWinRate: 58, awayWinRate: 40, goalsFor: 2.0, goalsAgainst: 1.4 },
-    "Newcastle": { bttsRate: 52, over25Rate: 55, homeWinRate: 62, awayWinRate: 45, goalsFor: 1.7, goalsAgainst: 1.0 },
-    "Brighton": { bttsRate: 69, over25Rate: 65, homeWinRate: 52, awayWinRate: 38, goalsFor: 1.6, goalsAgainst: 1.3 },
-    "Aston Villa": { bttsRate: 58, over25Rate: 60, homeWinRate: 60, awayWinRate: 42, goalsFor: 1.8, goalsAgainst: 1.1 },
-    "West Ham": { bttsRate: 55, over25Rate: 52, homeWinRate: 48, awayWinRate: 32, goalsFor: 1.4, goalsAgainst: 1.2 },
-    "Brentford": { bttsRate: 69, over25Rate: 62, homeWinRate: 45, awayWinRate: 30, goalsFor: 1.6, goalsAgainst: 1.5 },
-    "Crystal Palace": { bttsRate: 50, over25Rate: 48, homeWinRate: 42, awayWinRate: 28, goalsFor: 1.2, goalsAgainst: 1.1 },
-    "Fulham": { bttsRate: 58, over25Rate: 55, homeWinRate: 45, awayWinRate: 32, goalsFor: 1.4, goalsAgainst: 1.2 },
-    "Bournemouth": { bttsRate: 62, over25Rate: 58, homeWinRate: 42, awayWinRate: 28, goalsFor: 1.5, goalsAgainst: 1.4 },
-    "Wolves": { bttsRate: 48, over25Rate: 45, homeWinRate: 38, awayWinRate: 25, goalsFor: 1.1, goalsAgainst: 1.3 },
-    "Everton": { bttsRate: 52, over25Rate: 48, homeWinRate: 35, awayWinRate: 22, goalsFor: 1.0, goalsAgainst: 1.2 },
-    "Nottingham Forest": { bttsRate: 55, over25Rate: 52, homeWinRate: 40, awayWinRate: 28, goalsFor: 1.3, goalsAgainst: 1.2 },
-    "Leicester": { bttsRate: 60, over25Rate: 58, homeWinRate: 42, awayWinRate: 25, goalsFor: 1.4, goalsAgainst: 1.5 },
-    "Ipswich": { bttsRate: 55, over25Rate: 52, homeWinRate: 30, awayWinRate: 18, goalsFor: 1.0, goalsAgainst: 1.6 },
-    "Southampton": { bttsRate: 58, over25Rate: 55, homeWinRate: 25, awayWinRate: 15, goalsFor: 0.9, goalsAgainst: 1.8 }
+    "Manchester City": { bttsRate: 54, over25Rate: 62, homeWinRate: 75, awayWinRate: 55, goalsFor: 2.3, goalsAgainst: 0.9, injuries: 6 },
+    "Arsenal": { bttsRate: 58, over25Rate: 65, homeWinRate: 72, awayWinRate: 50, goalsFor: 2.1, goalsAgainst: 0.8, injuries: 2 },
+    "Liverpool": { bttsRate: 62, over25Rate: 70, homeWinRate: 78, awayWinRate: 58, goalsFor: 2.4, goalsAgainst: 1.0, injuries: 1 },
+    "Chelsea": { bttsRate: 65, over25Rate: 68, homeWinRate: 55, awayWinRate: 42, goalsFor: 1.8, goalsAgainst: 1.2, injuries: 4 },
+    "Manchester United": { bttsRate: 69, over25Rate: 58, homeWinRate: 50, awayWinRate: 38, goalsFor: 1.5, goalsAgainst: 1.3, injuries: 7 },
+    "Tottenham": { bttsRate: 64, over25Rate: 72, homeWinRate: 58, awayWinRate: 40, goalsFor: 2.0, goalsAgainst: 1.4, injuries: 5 },
+    "Newcastle": { bttsRate: 52, over25Rate: 55, homeWinRate: 62, awayWinRate: 45, goalsFor: 1.7, goalsAgainst: 1.0, injuries: 3 },
+    "Brighton": { bttsRate: 69, over25Rate: 65, homeWinRate: 52, awayWinRate: 38, goalsFor: 1.6, goalsAgainst: 1.3, injuries: 2 },
+    "Aston Villa": { bttsRate: 58, over25Rate: 60, homeWinRate: 60, awayWinRate: 42, goalsFor: 1.8, goalsAgainst: 1.1, injuries: 3 },
+    "West Ham": { bttsRate: 55, over25Rate: 52, homeWinRate: 48, awayWinRate: 32, goalsFor: 1.4, goalsAgainst: 1.2, injuries: 4 },
+    "Brentford": { bttsRate: 69, over25Rate: 62, homeWinRate: 45, awayWinRate: 30, goalsFor: 1.6, goalsAgainst: 1.5, injuries: 5 },
+    "Crystal Palace": { bttsRate: 50, over25Rate: 48, homeWinRate: 42, awayWinRate: 28, goalsFor: 1.2, goalsAgainst: 1.1, injuries: 3 },
+    "Fulham": { bttsRate: 58, over25Rate: 55, homeWinRate: 45, awayWinRate: 32, goalsFor: 1.4, goalsAgainst: 1.2, injuries: 2 },
+    "Bournemouth": { bttsRate: 62, over25Rate: 58, homeWinRate: 42, awayWinRate: 28, goalsFor: 1.5, goalsAgainst: 1.4, injuries: 4 },
+    "Wolves": { bttsRate: 48, over25Rate: 45, homeWinRate: 38, awayWinRate: 25, goalsFor: 1.1, goalsAgainst: 1.3, injuries: 6 },
+    "Everton": { bttsRate: 52, over25Rate: 48, homeWinRate: 35, awayWinRate: 22, goalsFor: 1.0, goalsAgainst: 1.2, injuries: 5 },
+    "Nottingham Forest": { bttsRate: 55, over25Rate: 52, homeWinRate: 40, awayWinRate: 28, goalsFor: 1.3, goalsAgainst: 1.2, injuries: 2 },
+    "Leicester": { bttsRate: 60, over25Rate: 58, homeWinRate: 42, awayWinRate: 25, goalsFor: 1.4, goalsAgainst: 1.5, injuries: 4 },
+    "Ipswich": { bttsRate: 55, over25Rate: 52, homeWinRate: 30, awayWinRate: 18, goalsFor: 1.0, goalsAgainst: 1.6, injuries: 3 },
+    "Southampton": { bttsRate: 58, over25Rate: 55, homeWinRate: 25, awayWinRate: 15, goalsFor: 0.9, goalsAgainst: 1.8, injuries: 6 }
 };
 
-// Sample upcoming matches with calculated probabilities
-const upcomingMatches = [
-    {
-        date: "2025-01-11",
-        homeTeam: "Liverpool",
-        awayTeam: "Manchester United",
-        favoriteOdds: 1.45,
-        bttsOdds: 1.65,
-        over25Odds: 1.55,
-        favorite: "Liverpool",
-        winProb: 72,
-        bttsProb: 65,
-        over25Prob: 68
-    },
-    {
-        date: "2025-01-11",
-        homeTeam: "Manchester City",
-        awayTeam: "Chelsea",
-        favoriteOdds: 1.38,
-        bttsOdds: 1.72,
-        over25Odds: 1.62,
-        favorite: "Manchester City",
-        winProb: 75,
-        bttsProb: 60,
-        over25Prob: 65
-    },
-    {
-        date: "2025-01-12",
-        homeTeam: "Arsenal",
-        awayTeam: "Tottenham",
-        favoriteOdds: 1.55,
-        bttsOdds: 1.58,
-        over25Odds: 1.52,
-        favorite: "Arsenal",
-        winProb: 65,
-        bttsProb: 68,
-        over25Prob: 72
-    },
-    {
-        date: "2025-01-12",
-        homeTeam: "Newcastle",
-        awayTeam: "Wolves",
-        favoriteOdds: 1.52,
-        bttsOdds: 1.85,
-        over25Odds: 1.78,
-        favorite: "Newcastle",
-        winProb: 68,
-        bttsProb: 50,
-        over25Prob: 52
-    },
-    {
-        date: "2025-01-12",
-        homeTeam: "Aston Villa",
-        awayTeam: "Everton",
-        favoriteOdds: 1.58,
-        bttsOdds: 1.80,
-        over25Odds: 1.75,
-        favorite: "Aston Villa",
-        winProb: 62,
-        bttsProb: 55,
-        over25Prob: 55
-    },
-    {
-        date: "2025-01-14",
-        homeTeam: "Brighton",
-        awayTeam: "Ipswich",
-        favoriteOdds: 1.48,
-        bttsOdds: 1.75,
-        over25Odds: 1.68,
-        favorite: "Brighton",
-        winProb: 70,
-        bttsProb: 58,
-        over25Prob: 60
-    },
-    {
-        date: "2025-01-14",
-        homeTeam: "Brentford",
-        awayTeam: "Southampton",
-        favoriteOdds: 1.65,
-        bttsOdds: 1.62,
-        over25Odds: 1.58,
-        favorite: "Brentford",
-        winProb: 58,
-        bttsProb: 65,
-        over25Prob: 62
-    },
-    {
-        date: "2025-01-15",
-        homeTeam: "West Ham",
-        awayTeam: "Fulham",
-        favoriteOdds: 1.92,
-        bttsOdds: 1.68,
-        over25Odds: 1.72,
-        favorite: "West Ham",
-        winProb: 52,
-        bttsProb: 58,
-        over25Prob: 55
-    },
-    {
-        date: "2025-01-15",
-        homeTeam: "Crystal Palace",
-        awayTeam: "Leicester",
-        favoriteOdds: 1.88,
-        bttsOdds: 1.72,
-        over25Odds: 1.75,
-        favorite: "Crystal Palace",
-        winProb: 48,
-        bttsProb: 55,
-        over25Prob: 52
-    },
-    {
-        date: "2025-01-18",
-        homeTeam: "Nottingham Forest",
-        awayTeam: "Bournemouth",
-        favoriteOdds: 1.85,
-        bttsOdds: 1.65,
-        over25Odds: 1.68,
-        favorite: "Nottingham Forest",
-        winProb: 50,
-        bttsProb: 60,
-        over25Prob: 58
+// Head-to-Head history (last 4 matches: W = home win, L = away win, D = draw)
+// Format: "HomeTeam vs AwayTeam": ["result1", "result2", "result3", "result4"] (most recent first)
+const h2hHistory = {
+    "Liverpool vs Manchester United": ["W", "W", "D", "W"],
+    "Manchester City vs Chelsea": ["W", "W", "W", "D"],
+    "Arsenal vs Tottenham": ["W", "W", "D", "L"],
+    "Newcastle vs Wolves": ["W", "W", "W", "W"],
+    "Aston Villa vs Everton": ["W", "D", "W", "L"],
+    "Brighton vs Ipswich": ["W", "W", "D", "W"],
+    "Brentford vs Southampton": ["W", "L", "W", "W"],
+    "West Ham vs Fulham": ["D", "L", "W", "D"],
+    "Crystal Palace vs Leicester": ["L", "W", "D", "L"],
+    "Nottingham Forest vs Bournemouth": ["W", "W", "D", "W"],
+    "Liverpool vs Chelsea": ["W", "W", "D", "W"],
+    "Manchester City vs Arsenal": ["W", "D", "W", "L"],
+    "Tottenham vs West Ham": ["W", "W", "W", "D"],
+};
+
+// Calculate injury advantage and H2H streak for each match
+function calculateAdvantages(homeTeam, awayTeam) {
+    const homeStats = teamStats[homeTeam] || { injuries: 3 };
+    const awayStats = teamStats[awayTeam] || { injuries: 3 };
+
+    // Injury advantage: favorite has 50%+ fewer injuries
+    const homeInjuries = homeStats.injuries;
+    const awayInjuries = awayStats.injuries;
+    let injuryAdvantage = null;
+
+    if (homeInjuries <= awayInjuries * 0.5) {
+        injuryAdvantage = homeTeam;
+    } else if (awayInjuries <= homeInjuries * 0.5) {
+        injuryAdvantage = awayTeam;
     }
+
+    // H2H streak: won last 2 matches
+    const h2hKey = `${homeTeam} vs ${awayTeam}`;
+    const h2h = h2hHistory[h2hKey] || [];
+    let h2hStreak = null;
+
+    if (h2h.length >= 2) {
+        if (h2h[0] === 'W' && h2h[1] === 'W') {
+            h2hStreak = homeTeam;
+        } else if (h2h[0] === 'L' && h2h[1] === 'L') {
+            h2hStreak = awayTeam;
+        }
+    }
+
+    return {
+        injuryAdvantage,
+        h2hStreak,
+        homeInjuries,
+        awayInjuries,
+        h2hRecord: h2h.slice(0, 4)
+    };
+}
+
+// Sample upcoming matches with calculated probabilities
+const upcomingMatchesRaw = [
+    { date: "2025-01-11", homeTeam: "Liverpool", awayTeam: "Manchester United", favoriteOdds: 1.45, bttsOdds: 1.65, over25Odds: 1.55, favorite: "Liverpool", winProb: 72, bttsProb: 65, over25Prob: 68 },
+    { date: "2025-01-11", homeTeam: "Manchester City", awayTeam: "Chelsea", favoriteOdds: 1.38, bttsOdds: 1.72, over25Odds: 1.62, favorite: "Manchester City", winProb: 75, bttsProb: 60, over25Prob: 65 },
+    { date: "2025-01-12", homeTeam: "Arsenal", awayTeam: "Tottenham", favoriteOdds: 1.55, bttsOdds: 1.58, over25Odds: 1.52, favorite: "Arsenal", winProb: 65, bttsProb: 68, over25Prob: 72 },
+    { date: "2025-01-12", homeTeam: "Newcastle", awayTeam: "Wolves", favoriteOdds: 1.52, bttsOdds: 1.85, over25Odds: 1.78, favorite: "Newcastle", winProb: 68, bttsProb: 50, over25Prob: 52 },
+    { date: "2025-01-12", homeTeam: "Aston Villa", awayTeam: "Everton", favoriteOdds: 1.58, bttsOdds: 1.80, over25Odds: 1.75, favorite: "Aston Villa", winProb: 62, bttsProb: 55, over25Prob: 55 },
+    { date: "2025-01-14", homeTeam: "Brighton", awayTeam: "Ipswich", favoriteOdds: 1.48, bttsOdds: 1.75, over25Odds: 1.68, favorite: "Brighton", winProb: 70, bttsProb: 58, over25Prob: 60 },
+    { date: "2025-01-14", homeTeam: "Brentford", awayTeam: "Southampton", favoriteOdds: 1.65, bttsOdds: 1.62, over25Odds: 1.58, favorite: "Brentford", winProb: 58, bttsProb: 65, over25Prob: 62 },
+    { date: "2025-01-15", homeTeam: "West Ham", awayTeam: "Fulham", favoriteOdds: 1.92, bttsOdds: 1.68, over25Odds: 1.72, favorite: "West Ham", winProb: 52, bttsProb: 58, over25Prob: 55 },
+    { date: "2025-01-15", homeTeam: "Crystal Palace", awayTeam: "Leicester", favoriteOdds: 1.88, bttsOdds: 1.72, over25Odds: 1.75, favorite: "Crystal Palace", winProb: 48, bttsProb: 55, over25Prob: 52 },
+    { date: "2025-01-18", homeTeam: "Nottingham Forest", awayTeam: "Bournemouth", favoriteOdds: 1.85, bttsOdds: 1.65, over25Odds: 1.68, favorite: "Nottingham Forest", winProb: 50, bttsProb: 60, over25Prob: 58 },
+    { date: "2025-01-18", homeTeam: "Tottenham", awayTeam: "West Ham", favoriteOdds: 1.58, bttsOdds: 1.62, over25Odds: 1.55, favorite: "Tottenham", winProb: 62, bttsProb: 65, over25Prob: 68 },
 ];
+
+// Enrich matches with advantages and adjust probabilities
+const upcomingMatches = upcomingMatchesRaw.map(match => {
+    const advantages = calculateAdvantages(match.homeTeam, match.awayTeam);
+    let adjustedWinProb = match.winProb;
+
+    // Boost probability if favorite has injury advantage
+    if (advantages.injuryAdvantage === match.favorite) {
+        adjustedWinProb = Math.min(95, adjustedWinProb + 8);
+    }
+
+    // Boost probability if favorite has H2H winning streak
+    if (advantages.h2hStreak === match.favorite) {
+        adjustedWinProb = Math.min(95, adjustedWinProb + 6);
+    }
+
+    return {
+        ...match,
+        ...advantages,
+        originalWinProb: match.winProb,
+        winProb: adjustedWinProb,
+        hasAdvantage: advantages.injuryAdvantage === match.favorite || advantages.h2hStreak === match.favorite
+    };
+});
 
 // State
 let filteredMatches = [...upcomingMatches];
@@ -168,6 +140,8 @@ const maxFavoriteOddsInput = document.getElementById('maxFavoriteOdds');
 const maxBttsOddsInput = document.getElementById('maxBttsOdds');
 const maxOver25OddsInput = document.getElementById('maxOver25Odds');
 const minWinProbInput = document.getElementById('minWinProb');
+const filterInjuryAdvantage = document.getElementById('filterInjuryAdvantage');
+const filterH2HStreak = document.getElementById('filterH2HStreak');
 
 // Live matches data (simulated real-time)
 const liveMatches = [
@@ -278,12 +252,27 @@ function applyFilters() {
     const maxBttsOdds = parseFloat(maxBttsOddsInput.value) || 1.70;
     const maxOver25Odds = parseFloat(maxOver25OddsInput.value) || 1.70;
     const minWinProb = parseFloat(minWinProbInput.value) || 50;
+    const requireInjuryAdvantage = filterInjuryAdvantage?.checked || false;
+    const requireH2HStreak = filterH2HStreak?.checked || false;
 
     filteredMatches = upcomingMatches.filter(match => {
-        return match.favoriteOdds <= maxFavoriteOdds &&
-               match.bttsOdds <= maxBttsOdds &&
-               match.over25Odds <= maxOver25Odds &&
-               match.winProb >= minWinProb;
+        // Basic odds filters
+        if (match.favoriteOdds > maxFavoriteOdds) return false;
+        if (match.bttsOdds > maxBttsOdds) return false;
+        if (match.over25Odds > maxOver25Odds) return false;
+        if (match.winProb < minWinProb) return false;
+
+        // Injury advantage filter
+        if (requireInjuryAdvantage && match.injuryAdvantage !== match.favorite) {
+            return false;
+        }
+
+        // H2H streak filter
+        if (requireH2HStreak && match.h2hStreak !== match.favorite) {
+            return false;
+        }
+
+        return true;
     });
 
     // Sort by current sort settings
@@ -341,7 +330,7 @@ function renderMatches() {
     if (filteredMatches.length === 0) {
         matchesBody.innerHTML = `
             <tr>
-                <td colspan="8" class="loading">No matches found with current filters. Try adjusting the criteria.</td>
+                <td colspan="9" class="loading">No matches found with current filters. Try adjusting the criteria.</td>
             </tr>
         `;
         return;
@@ -349,10 +338,22 @@ function renderMatches() {
 
     matchesBody.innerHTML = filteredMatches.map(match => {
         const probClass = match.winProb >= 70 ? 'high' : match.winProb >= 55 ? 'medium' : 'low';
-        const confidence = getConfidenceLevel(match);
+
+        // Injury class
+        const getInjuryClass = (count) => count <= 2 ? 'low' : count <= 4 ? 'medium' : 'high';
+
+        // H2H display
+        const h2hDisplay = match.h2hRecord.length > 0
+            ? match.h2hRecord.map(r => `<span class="h2h-result ${r}">${r}</span>`).join('')
+            : '<span style="color: var(--text-muted)">-</span>';
+
+        // Probability boost indicator
+        const boostIndicator = match.winProb > match.originalWinProb
+            ? `<span style="color: var(--success); font-size: 10px; margin-left: 4px;">+${match.winProb - match.originalWinProb}%</span>`
+            : '';
 
         return `
-            <tr>
+            <tr class="${match.hasAdvantage ? 'has-advantage' : ''}">
                 <td>${formatDate(match.date)}</td>
                 <td>
                     <div class="match-teams">
@@ -361,10 +362,14 @@ function renderMatches() {
                         <span class="team-away">${match.awayTeam}</span>
                     </div>
                 </td>
-                <td><span class="badge badge-primary">${match.favorite}</span></td>
+                <td>
+                    <span class="badge badge-primary">${match.favorite}</span>
+                    ${match.injuryAdvantage === match.favorite ? '<span class="advantage-badge injury" title="50% fewer injuries">🏥</span>' : ''}
+                    ${match.h2hStreak === match.favorite ? '<span class="advantage-badge h2h" title="H2H win streak">🔥</span>' : ''}
+                </td>
                 <td>
                     <div class="prob-bar">
-                        <span class="prob-value">${match.winProb}%</span>
+                        <span class="prob-value">${match.winProb}%${boostIndicator}</span>
                         <div class="prob-visual">
                             <div class="prob-fill ${probClass}" style="width: ${match.winProb}%"></div>
                         </div>
@@ -372,21 +377,24 @@ function renderMatches() {
                 </td>
                 <td><span class="odds ${match.favoriteOdds <= 1.6 ? 'good' : 'ok'}">${match.favoriteOdds.toFixed(2)}</span></td>
                 <td>
+                    <div class="injury-display">
+                        <span class="injury-count ${getInjuryClass(match.homeInjuries)}">${match.homeInjuries}</span>
+                        <span style="color: var(--text-muted)">vs</span>
+                        <span class="injury-count ${getInjuryClass(match.awayInjuries)}">${match.awayInjuries}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="h2h-display">${h2hDisplay}</div>
+                </td>
+                <td>
                     <span class="badge ${match.bttsOdds <= 1.70 ? 'badge-success' : 'badge-warning'}">
-                        ${match.bttsOdds.toFixed(2)} (${match.bttsProb}%)
+                        ${match.bttsOdds.toFixed(2)}
                     </span>
                 </td>
                 <td>
                     <span class="badge ${match.over25Odds <= 1.70 ? 'badge-success' : 'badge-warning'}">
-                        ${match.over25Odds.toFixed(2)} (${match.over25Prob}%)
+                        ${match.over25Odds.toFixed(2)}
                     </span>
-                </td>
-                <td>
-                    <div class="confidence">
-                        ${[1,2,3,4,5].map(i =>
-                            `<span class="confidence-dot ${i <= confidence ? 'active' : ''} ${confidence >= 4 ? 'high' : ''}"></span>`
-                        ).join('')}
-                    </div>
                 </td>
             </tr>
         `;

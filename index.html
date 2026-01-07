@@ -63,6 +63,18 @@
                         <label>Min Win Probability %</label>
                         <input type="number" id="minWinProb" value="50" step="1" min="0" max="100">
                     </div>
+                    <div class="filter-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="filterInjuryAdvantage">
+                            <span>🏥 Injury Advantage (50% fewer)</span>
+                        </label>
+                    </div>
+                    <div class="filter-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="filterH2HStreak">
+                            <span>🔥 H2H Win Streak (2+ wins)</span>
+                        </label>
+                    </div>
                     <button id="applyFilters" class="btn-primary">Apply Filters</button>
                 </div>
             </section>
@@ -99,9 +111,10 @@
                                 <th>Favorite</th>
                                 <th class="sortable" data-sort="winProb">Win Prob %</th>
                                 <th>Odds</th>
+                                <th>Injuries</th>
+                                <th>H2H</th>
                                 <th class="sortable" data-sort="btts">BTTS</th>
                                 <th class="sortable" data-sort="over25">Over 2.5</th>
-                                <th>Confidence</th>
                             </tr>
                         </thead>
                         <tbody id="matchesBody">
