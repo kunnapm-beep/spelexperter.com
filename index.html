@@ -1,156 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpelExperter - Premier League Betting Predictions</title>
+    <title>SpelExperter - Över 2.5 Mål Tips | Martin Künnap</title>
+    <meta name="description" content="SpelExperter av Martin Künnap - Statistikbaserade över 2.5 mål tips för Premier League.">
+    <meta name="author" content="Martin Künnap">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
-    <!-- Live Ticker -->
-    <div class="live-ticker">
-        <div class="container">
-            <div class="ticker-wrapper">
-                <div class="ticker-label">LIVE</div>
-                <div class="ticker-content">
-                    <div class="ticker-track" id="tickerTrack">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <header class="header">
         <div class="container">
-            <div class="logo">
-                <span class="logo-icon">⚽</span>
-                <span class="logo-text gradient-text">SpelExperter</span>
+            <div class="header-top">
+                <span class="logo-text">SpelExperter</span>
+                <div class="header-right">
+                    <span class="last-update" id="lastUpdate">--:--</span>
+                    <button id="refreshBtn" class="btn-green btn-sm">Uppdatera</button>
+                </div>
             </div>
-            <nav class="nav">
-                <a href="#" class="nav-link active">Premier League</a>
-                <a href="#" class="nav-link">La Liga</a>
-                <a href="#" class="nav-link">Bundesliga</a>
-            </nav>
         </div>
     </header>
 
-    <main class="main">
-        <div class="container">
-            <section class="hero">
-                <h1>Premier League Predictions</h1>
-                <p>Data-driven betting insights based on statistics and probability analysis</p>
-            </section>
-
-            <!-- Filters -->
-            <section class="filters-section">
-                <h2>Filters</h2>
-                <div class="filters">
-                    <div class="filter-group">
-                        <label>Favorite Odds (max)</label>
-                        <input type="number" id="maxFavoriteOdds" value="1.93" step="0.01" min="1.01" max="3.00">
-                    </div>
-                    <div class="filter-group">
-                        <label>BTTS Odds (max)</label>
-                        <input type="number" id="maxBttsOdds" value="1.70" step="0.01" min="1.01" max="3.00">
-                    </div>
-                    <div class="filter-group">
-                        <label>Over 2.5 Odds (max)</label>
-                        <input type="number" id="maxOver25Odds" value="1.70" step="0.01" min="1.01" max="3.00">
-                    </div>
-                    <div class="filter-group">
-                        <label>Min Win Probability %</label>
-                        <input type="number" id="minWinProb" value="50" step="1" min="0" max="100">
-                    </div>
-                    <div class="filter-group checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="filterInjuryAdvantage">
-                            <span>🏥 Injury Advantage (50% fewer)</span>
-                        </label>
-                    </div>
-                    <div class="filter-group checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="filterH2HStreak">
-                            <span>🔥 H2H Win Streak (2+ wins)</span>
-                        </label>
-                    </div>
-                    <button id="applyFilters" class="btn-primary">Apply Filters</button>
-                </div>
-            </section>
-
-            <!-- Stats Summary -->
-            <section class="stats-summary">
-                <div class="stat-card">
-                    <div class="stat-value" id="totalMatches">0</div>
-                    <div class="stat-label">Matches Found</div>
-                </div>
-                <div class="stat-card highlight">
-                    <div class="stat-value" id="avgWinProb">0%</div>
-                    <div class="stat-label">Avg Win Probability</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="bttsMatches">0</div>
-                    <div class="stat-label">BTTS Qualified</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="over25Matches">0</div>
-                    <div class="stat-label">Over 2.5 Qualified</div>
-                </div>
-            </section>
-
-            <!-- Predictions Table -->
-            <section class="predictions-section">
-                <h2>Upcoming Matches</h2>
-                <div class="table-wrapper">
-                    <table class="predictions-table" id="predictionsTable">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Match</th>
-                                <th>Favorite</th>
-                                <th class="sortable" data-sort="winProb">Win Prob %</th>
-                                <th>Odds</th>
-                                <th>Injuries</th>
-                                <th>H2H</th>
-                                <th class="sortable" data-sort="btts">BTTS</th>
-                                <th class="sortable" data-sort="over25">Over 2.5</th>
-                            </tr>
-                        </thead>
-                        <tbody id="matchesBody">
-                            <tr>
-                                <td colspan="8" class="loading">Loading predictions...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Latest News -->
-            <section class="news-section">
-                <h2>📰 Latest Football News</h2>
-                <div class="news-grid" id="newsGrid">
-                    <!-- News loaded by JS -->
-                </div>
-            </section>
-
-            <!-- Team Statistics -->
-            <section class="team-stats-section">
-                <h2>2024/25 Season Statistics</h2>
-                <div class="team-stats-grid" id="teamStatsGrid">
-                    <!-- Team stats will be loaded here -->
-                </div>
-            </section>
+    <main class="container">
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat"><span class="stat-val" id="hitRate">0%</span><span class="stat-lbl">Träff 30d</span></div>
+            <div class="stat"><span class="stat-val" id="totalTips">0</span><span class="stat-lbl">Tips</span></div>
+            <div class="stat"><span class="stat-val" id="avgOdds">0.00</span><span class="stat-lbl">Snitt</span></div>
+            <div class="stat"><span class="stat-val" id="profitRate">+0%</span><span class="stat-lbl">ROI</span></div>
         </div>
+
+        <!-- Tips -->
+        <section>
+            <div class="row-between">
+                <h2>Premier League - Över 2.5 Mål</h2>
+                <div class="row-gap4">
+                    <button class="date-btn active" data-days="7">Nästa</button>
+                    <button class="date-btn" data-days="10">Vecka</button>
+                    <button class="date-btn" data-days="14">2 veckor</button>
+                    <button id="saveBtn" class="btn-green btn-sm">Spara</button>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Datum</th><th>Match</th><th>Ö2.5</th><th>BTTS</th><th>Favorit</th><th>Konf.</th></tr></thead>
+                    <tbody id="tipsBody"><tr><td colspan="6" class="muted center">Laddar...</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Bonus -->
+        <section>
+            <h2>Bonusar</h2>
+            <div class="bonus-grid" id="bonusGrid"></div>
+        </section>
+
+        <!-- History -->
+        <section>
+            <div class="row-between">
+                <h2>Sparade Tips</h2>
+                <div class="row-gap4">
+                    <button class="tab-btn active" data-period="7">7d</button>
+                    <button class="tab-btn" data-period="30">30d</button>
+                    <button class="tab-btn" data-period="all">Alla</button>
+                    <button id="clearSavedBtn" class="btn-outline-red btn-sm">Rensa</button>
+                </div>
+            </div>
+            <div class="hist-stats">
+                <span>Totalt: <b id="historyTotal">0</b></span>
+                <span class="green">Vunna: <b id="historyWins">0</b></span>
+                <span class="red">Förlorade: <b id="historyLosses">0</b></span>
+                <span>Vinst: <b id="historyProfit">0 kr</b></span>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Datum</th><th>Match</th><th>Odds</th><th>Resultat</th><th>Status</th></tr></thead>
+                    <tbody id="savedTipsBody"><tr><td colspan="5" class="muted center">Inga sparade tips.</td></tr></tbody>
+                </table>
+            </div>
+        </section>
     </main>
 
     <footer class="footer">
-        <div class="container">
-            <p>SpelExperter.com - Data-driven sports predictions</p>
-            <p class="disclaimer">Gambling involves risk. Please bet responsibly. 18+</p>
-        </div>
+        <p>SpelExperter.com - Spela ansvarsfullt. 18+</p>
+        <p class="credit">Martin Künnap</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=5"></script>
 </body>
 </html>

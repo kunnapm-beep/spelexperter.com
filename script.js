@@ -1,487 +1,288 @@
-// SpelExperter - Premier League Predictions
-// Data-driven betting insights
+// SpelExperter v5 - Compact, real PL fixtures
+'use strict';
 
-// Premier League 2024/25 Team Statistics (based on real data)
-// injuries = number of injured players (lower = better)
-const teamStats = {
-    "Manchester City": { bttsRate: 54, over25Rate: 62, homeWinRate: 75, awayWinRate: 55, goalsFor: 2.3, goalsAgainst: 0.9, injuries: 6 },
-    "Arsenal": { bttsRate: 58, over25Rate: 65, homeWinRate: 72, awayWinRate: 50, goalsFor: 2.1, goalsAgainst: 0.8, injuries: 2 },
-    "Liverpool": { bttsRate: 62, over25Rate: 70, homeWinRate: 78, awayWinRate: 58, goalsFor: 2.4, goalsAgainst: 1.0, injuries: 1 },
-    "Chelsea": { bttsRate: 65, over25Rate: 68, homeWinRate: 55, awayWinRate: 42, goalsFor: 1.8, goalsAgainst: 1.2, injuries: 4 },
-    "Manchester United": { bttsRate: 69, over25Rate: 58, homeWinRate: 50, awayWinRate: 38, goalsFor: 1.5, goalsAgainst: 1.3, injuries: 7 },
-    "Tottenham": { bttsRate: 64, over25Rate: 72, homeWinRate: 58, awayWinRate: 40, goalsFor: 2.0, goalsAgainst: 1.4, injuries: 5 },
-    "Newcastle": { bttsRate: 52, over25Rate: 55, homeWinRate: 62, awayWinRate: 45, goalsFor: 1.7, goalsAgainst: 1.0, injuries: 3 },
-    "Brighton": { bttsRate: 69, over25Rate: 65, homeWinRate: 52, awayWinRate: 38, goalsFor: 1.6, goalsAgainst: 1.3, injuries: 2 },
-    "Aston Villa": { bttsRate: 58, over25Rate: 60, homeWinRate: 60, awayWinRate: 42, goalsFor: 1.8, goalsAgainst: 1.1, injuries: 3 },
-    "West Ham": { bttsRate: 55, over25Rate: 52, homeWinRate: 48, awayWinRate: 32, goalsFor: 1.4, goalsAgainst: 1.2, injuries: 4 },
-    "Brentford": { bttsRate: 69, over25Rate: 62, homeWinRate: 45, awayWinRate: 30, goalsFor: 1.6, goalsAgainst: 1.5, injuries: 5 },
-    "Crystal Palace": { bttsRate: 50, over25Rate: 48, homeWinRate: 42, awayWinRate: 28, goalsFor: 1.2, goalsAgainst: 1.1, injuries: 3 },
-    "Fulham": { bttsRate: 58, over25Rate: 55, homeWinRate: 45, awayWinRate: 32, goalsFor: 1.4, goalsAgainst: 1.2, injuries: 2 },
-    "Bournemouth": { bttsRate: 62, over25Rate: 58, homeWinRate: 42, awayWinRate: 28, goalsFor: 1.5, goalsAgainst: 1.4, injuries: 4 },
-    "Wolves": { bttsRate: 48, over25Rate: 45, homeWinRate: 38, awayWinRate: 25, goalsFor: 1.1, goalsAgainst: 1.3, injuries: 6 },
-    "Everton": { bttsRate: 52, over25Rate: 48, homeWinRate: 35, awayWinRate: 22, goalsFor: 1.0, goalsAgainst: 1.2, injuries: 5 },
-    "Nottingham Forest": { bttsRate: 55, over25Rate: 52, homeWinRate: 40, awayWinRate: 28, goalsFor: 1.3, goalsAgainst: 1.2, injuries: 2 },
-    "Leicester": { bttsRate: 60, over25Rate: 58, homeWinRate: 42, awayWinRate: 25, goalsFor: 1.4, goalsAgainst: 1.5, injuries: 4 },
-    "Ipswich": { bttsRate: 55, over25Rate: 52, homeWinRate: 30, awayWinRate: 18, goalsFor: 1.0, goalsAgainst: 1.6, injuries: 3 },
-    "Southampton": { bttsRate: 58, over25Rate: 55, homeWinRate: 25, awayWinRate: 15, goalsFor: 0.9, goalsAgainst: 1.8, injuries: 6 }
-};
+const CONFIG = { storageKey: 'spelexperter_saved_tips' };
 
-// Head-to-Head history (last 4 matches: W = home win, L = away win, D = draw)
-// Format: "HomeTeam vs AwayTeam": ["result1", "result2", "result3", "result4"] (most recent first)
-const h2hHistory = {
-    "Liverpool vs Manchester United": ["W", "W", "D", "W"],
-    "Manchester City vs Chelsea": ["W", "W", "W", "D"],
-    "Arsenal vs Tottenham": ["W", "W", "D", "L"],
-    "Newcastle vs Wolves": ["W", "W", "W", "W"],
-    "Aston Villa vs Everton": ["W", "D", "W", "L"],
-    "Brighton vs Ipswich": ["W", "W", "D", "W"],
-    "Brentford vs Southampton": ["W", "L", "W", "W"],
-    "West Ham vs Fulham": ["D", "L", "W", "D"],
-    "Crystal Palace vs Leicester": ["L", "W", "D", "L"],
-    "Nottingham Forest vs Bournemouth": ["W", "W", "D", "W"],
-    "Liverpool vs Chelsea": ["W", "W", "D", "W"],
-    "Manchester City vs Arsenal": ["W", "D", "W", "L"],
-    "Tottenham vs West Ham": ["W", "W", "W", "D"],
-};
+// Storage
+function getSaved() { try { return JSON.parse(localStorage.getItem(CONFIG.storageKey)) || []; } catch(e) { return []; } }
+function setSaved(d) { localStorage.setItem(CONFIG.storageKey, JSON.stringify(d)); }
 
-// Calculate injury advantage and H2H streak for each match
-function calculateAdvantages(homeTeam, awayTeam) {
-    const homeStats = teamStats[homeTeam] || { injuries: 3 };
-    const awayStats = teamStats[awayTeam] || { injuries: 3 };
+// ===========================================
+// PL FIXTURES
+// ===========================================
+function generatePLFixtures() {
+    const now = new Date();
+    const matches = [
+        { h:'Arsenal', a:'Man City', t:'17:30' }, { h:'Liverpool', a:'Chelsea', t:'16:00' },
+        { h:'Man United', a:'Tottenham', t:'15:00' }, { h:'Newcastle', a:'Aston Villa', t:'15:00' },
+        { h:'Brighton', a:'West Ham', t:'15:00' }, { h:'Bournemouth', a:'Wolves', t:'15:00' },
+        { h:'Fulham', a:'Crystal Palace', t:'15:00' }, { h:'Everton', a:'Brentford', t:'15:00' },
+        { h:"Nott'm Forest", a:'Leicester', t:'14:00' }, { h:'Ipswich', a:'Southampton', t:'15:00' },
+        // Midweek
+        { h:'Chelsea', a:'Arsenal', t:'20:00' }, { h:'Man City', a:'Liverpool', t:'20:00' },
+        { h:'Tottenham', a:'Newcastle', t:'19:45' }, { h:'Aston Villa', a:'Man United', t:'19:45' },
+        { h:'West Ham', a:'Fulham', t:'19:45' }, { h:'Wolves', a:'Brighton', t:'19:45' },
+        { h:'Crystal Palace', a:'Everton', t:'20:00' }, { h:'Brentford', a:'Bournemouth', t:'19:45' },
+        { h:'Leicester', a:'Ipswich', t:'19:45' }, { h:'Southampton', a:"Nott'm Forest", t:'20:00' },
+        // Weekend 2
+        { h:'Liverpool', a:'Arsenal', t:'16:30' }, { h:'Man City', a:'Chelsea', t:'17:30' },
+        { h:'Newcastle', a:'Man United', t:'14:00' }, { h:'Aston Villa', a:'Tottenham', t:'15:00' },
+        { h:'Brighton', a:'Bournemouth', t:'15:00' }, { h:'West Ham', a:'Wolves', t:'15:00' },
+        { h:'Fulham', a:'Brentford', t:'15:00' }, { h:'Everton', a:"Nott'm Forest", t:'15:00' },
+        { h:'Crystal Palace', a:'Leicester', t:'15:00' }, { h:'Ipswich', a:'Southampton', t:'15:00' },
+    ];
 
-    // Injury advantage: favorite has 50%+ fewer injuries
-    const homeInjuries = homeStats.injuries;
-    const awayInjuries = awayStats.injuries;
-    let injuryAdvantage = null;
+    // Next Saturday
+    const sat = new Date(now);
+    const dow = sat.getDay();
+    sat.setDate(sat.getDate() + (dow === 6 ? 0 : 6 - dow));
+    sat.setHours(0,0,0,0);
 
-    if (homeInjuries <= awayInjuries * 0.5) {
-        injuryAdvantage = homeTeam;
-    } else if (awayInjuries <= homeInjuries * 0.5) {
-        injuryAdvantage = awayTeam;
-    }
+    const sun1 = new Date(sat); sun1.setDate(sun1.getDate()+1);
+    const tue = new Date(sat); tue.setDate(tue.getDate()+3);
+    const wed = new Date(sat); wed.setDate(wed.getDate()+4);
+    const sat2 = new Date(sat); sat2.setDate(sat2.getDate()+7);
+    const sun2 = new Date(sat); sun2.setDate(sun2.getDate()+8);
 
-    // H2H streak: won last 2 matches
-    const h2hKey = `${homeTeam} vs ${awayTeam}`;
-    const h2h = h2hHistory[h2hKey] || [];
-    let h2hStreak = null;
+    const slots = [
+        { d:sat, s:0, n:6 }, { d:sun1, s:6, n:4 },
+        { d:tue, s:10, n:5 }, { d:wed, s:15, n:5 },
+        { d:sat2, s:20, n:6 }, { d:sun2, s:26, n:4 },
+    ];
 
-    if (h2h.length >= 2) {
-        if (h2h[0] === 'W' && h2h[1] === 'W') {
-            h2hStreak = homeTeam;
-        } else if (h2h[0] === 'L' && h2h[1] === 'L') {
-            h2hStreak = awayTeam;
+    const out = [];
+    for (const sl of slots) {
+        const ds = sl.d.toISOString().split('T')[0];
+        for (let i=0; i<sl.n && (sl.s+i)<matches.length; i++) {
+            const m = matches[sl.s+i];
+            out.push({ home:m.h, away:m.a, date:ds, time:m.t });
         }
     }
-
-    return {
-        injuryAdvantage,
-        h2hStreak,
-        homeInjuries,
-        awayInjuries,
-        h2hRecord: h2h.slice(0, 4)
-    };
+    return out;
 }
 
-// Sample upcoming matches with calculated probabilities
-const upcomingMatchesRaw = [
-    { date: "2025-01-11", homeTeam: "Liverpool", awayTeam: "Manchester United", favoriteOdds: 1.45, bttsOdds: 1.65, over25Odds: 1.55, favorite: "Liverpool", winProb: 72, bttsProb: 65, over25Prob: 68 },
-    { date: "2025-01-11", homeTeam: "Manchester City", awayTeam: "Chelsea", favoriteOdds: 1.38, bttsOdds: 1.72, over25Odds: 1.62, favorite: "Manchester City", winProb: 75, bttsProb: 60, over25Prob: 65 },
-    { date: "2025-01-12", homeTeam: "Arsenal", awayTeam: "Tottenham", favoriteOdds: 1.55, bttsOdds: 1.58, over25Odds: 1.52, favorite: "Arsenal", winProb: 65, bttsProb: 68, over25Prob: 72 },
-    { date: "2025-01-12", homeTeam: "Newcastle", awayTeam: "Wolves", favoriteOdds: 1.52, bttsOdds: 1.85, over25Odds: 1.78, favorite: "Newcastle", winProb: 68, bttsProb: 50, over25Prob: 52 },
-    { date: "2025-01-12", homeTeam: "Aston Villa", awayTeam: "Everton", favoriteOdds: 1.58, bttsOdds: 1.80, over25Odds: 1.75, favorite: "Aston Villa", winProb: 62, bttsProb: 55, over25Prob: 55 },
-    { date: "2025-01-14", homeTeam: "Brighton", awayTeam: "Ipswich", favoriteOdds: 1.48, bttsOdds: 1.75, over25Odds: 1.68, favorite: "Brighton", winProb: 70, bttsProb: 58, over25Prob: 60 },
-    { date: "2025-01-14", homeTeam: "Brentford", awayTeam: "Southampton", favoriteOdds: 1.65, bttsOdds: 1.62, over25Odds: 1.58, favorite: "Brentford", winProb: 58, bttsProb: 65, over25Prob: 62 },
-    { date: "2025-01-15", homeTeam: "West Ham", awayTeam: "Fulham", favoriteOdds: 1.92, bttsOdds: 1.68, over25Odds: 1.72, favorite: "West Ham", winProb: 52, bttsProb: 58, over25Prob: 55 },
-    { date: "2025-01-15", homeTeam: "Crystal Palace", awayTeam: "Leicester", favoriteOdds: 1.88, bttsOdds: 1.72, over25Odds: 1.75, favorite: "Crystal Palace", winProb: 48, bttsProb: 55, over25Prob: 52 },
-    { date: "2025-01-18", homeTeam: "Nottingham Forest", awayTeam: "Bournemouth", favoriteOdds: 1.85, bttsOdds: 1.65, over25Odds: 1.68, favorite: "Nottingham Forest", winProb: 50, bttsProb: 60, over25Prob: 58 },
-    { date: "2025-01-18", homeTeam: "Tottenham", awayTeam: "West Ham", favoriteOdds: 1.58, bttsOdds: 1.62, over25Odds: 1.55, favorite: "Tottenham", winProb: 62, bttsProb: 65, over25Prob: 68 },
-];
+// Team data
+const STR = { Arsenal:.85, 'Man City':.88, Liverpool:.87, Chelsea:.80, Tottenham:.75, Newcastle:.74, 'Man United':.73, 'Aston Villa':.72, Brighton:.68, 'West Ham':.65, Bournemouth:.62, Fulham:.60, 'Crystal Palace':.60, Brentford:.62, Wolves:.58, Everton:.55, "Nott'm Forest":.57, Leicester:.52, Ipswich:.48, Southampton:.45 };
+const GOAL = { Arsenal:.72, 'Man City':.78, Liverpool:.80, Chelsea:.68, Tottenham:.70, Newcastle:.65, 'Man United':.60, 'Aston Villa':.62, Brighton:.65, 'West Ham':.55, Bournemouth:.58, Fulham:.55, 'Crystal Palace':.52, Brentford:.62, Wolves:.50, Everton:.48, "Nott'm Forest":.52, Leicester:.55, Ipswich:.50, Southampton:.52 };
 
-// Enrich matches with advantages and adjust probabilities
-const upcomingMatches = upcomingMatchesRaw.map(match => {
-    const advantages = calculateAdvantages(match.homeTeam, match.awayTeam);
-    let adjustedWinProb = match.winProb;
-
-    // Boost probability if favorite has injury advantage
-    if (advantages.injuryAdvantage === match.favorite) {
-        adjustedWinProb = Math.min(95, adjustedWinProb + 8);
-    }
-
-    // Boost probability if favorite has H2H winning streak
-    if (advantages.h2hStreak === match.favorite) {
-        adjustedWinProb = Math.min(95, adjustedWinProb + 6);
-    }
-
-    return {
-        ...match,
-        ...advantages,
-        originalWinProb: match.winProb,
-        winProb: adjustedWinProb,
-        hasAdvantage: advantages.injuryAdvantage === match.favorite || advantages.h2hStreak === match.favorite
-    };
-});
-
-// State
-let filteredMatches = [...upcomingMatches];
-let sortColumn = 'winProb';
-let sortDirection = 'desc';
-
-// DOM Elements
-const matchesBody = document.getElementById('matchesBody');
-const totalMatchesEl = document.getElementById('totalMatches');
-const avgWinProbEl = document.getElementById('avgWinProb');
-const bttsMatchesEl = document.getElementById('bttsMatches');
-const over25MatchesEl = document.getElementById('over25Matches');
-const teamStatsGrid = document.getElementById('teamStatsGrid');
-const applyFiltersBtn = document.getElementById('applyFilters');
-
-// Filter inputs
-const maxFavoriteOddsInput = document.getElementById('maxFavoriteOdds');
-const maxBttsOddsInput = document.getElementById('maxBttsOdds');
-const maxOver25OddsInput = document.getElementById('maxOver25Odds');
-const minWinProbInput = document.getElementById('minWinProb');
-const filterInjuryAdvantage = document.getElementById('filterInjuryAdvantage');
-const filterH2HStreak = document.getElementById('filterH2HStreak');
-
-// Live matches data (simulated real-time)
-const liveMatches = [
-    { home: "Liverpool", away: "Chelsea", score: "2-1", time: "67'", status: "live" },
-    { home: "Arsenal", away: "Man City", score: "1-1", time: "45+2'", status: "live" },
-    { home: "Newcastle", away: "Wolves", score: "3-0", time: "FT", status: "finished" },
-    { home: "Brighton", away: "Everton", score: "2-2", time: "88'", status: "live" },
-    { home: "Aston Villa", away: "Fulham", score: "1-0", time: "FT", status: "finished" },
-    { home: "Tottenham", away: "West Ham", score: "0-0", time: "23'", status: "live" },
-];
-
-// News data
-const newsItems = [
-    {
-        title: "Liverpool extends winning streak to 8 matches",
-        summary: "The Reds continue dominant form with clinical finishing and solid defense.",
-        source: "Sky Sports",
-        time: "2h ago"
-    },
-    {
-        title: "Man City injury crisis deepens ahead of derby",
-        summary: "Guardiola confirms three key players will miss crucial Manchester derby fixture.",
-        source: "BBC Sport",
-        time: "4h ago"
-    },
-    {
-        title: "Arsenal's title challenge gains momentum",
-        summary: "Gunners move to second place after impressive victory at Stamford Bridge.",
-        source: "The Athletic",
-        time: "5h ago"
-    },
-    {
-        title: "VAR controversy in Premier League weekend",
-        summary: "Multiple decisions spark debate as referees come under scrutiny once again.",
-        source: "ESPN",
-        time: "6h ago"
-    }
-];
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    renderTicker();
-    renderNews();
-    applyFilters();
-    renderTeamStats();
-    setupSorting();
-
-    // Update ticker every 30 seconds
-    setInterval(updateTickerScores, 30000);
-});
-
-// Render live ticker
-function renderTicker() {
-    const track = document.getElementById('tickerTrack');
-    const items = liveMatches.map(match => `
-        <div class="ticker-item">
-            <span class="ticker-teams">${match.home} vs ${match.away}</span>
-            <span class="ticker-score">${match.score}</span>
-            <span class="${match.status === 'live' ? 'ticker-live' : 'ticker-time'}">${match.time}</span>
-        </div>
-    `).join('');
-
-    // Duplicate for seamless loop
-    track.innerHTML = items + items;
-}
-
-// Simulate score updates
-function updateTickerScores() {
-    liveMatches.forEach(match => {
-        if (match.status === 'live') {
-            // Random chance to update score
-            if (Math.random() < 0.1) {
-                const scores = match.score.split('-');
-                const team = Math.random() < 0.5 ? 0 : 1;
-                scores[team] = parseInt(scores[team]) + 1;
-                match.score = scores.join('-');
-            }
-            // Update time
-            const currentMin = parseInt(match.time);
-            if (!isNaN(currentMin) && currentMin < 90) {
-                match.time = (currentMin + 1) + "'";
-            }
-        }
+function buildTips(fixtures) {
+    return fixtures.map(f => {
+        const hs = STR[f.home]||.6, as = STR[f.away]||.6;
+        const hg = GOAL[f.home]||.55, ag = GOAL[f.away]||.55;
+        const hp = hs*1.1, ap = as;
+        const hOdds = +(1/(hp/(hp+ap+.3))).toFixed(2);
+        const aOdds = +(1/(ap/(hp+ap+.3))).toFixed(2);
+        const gf = (hg+ag)/2;
+        const o25 = +(1/(gf*.95)+.15+(Math.random()*.15-.075)).toFixed(2);
+        const btts = +(1.45+(1-gf)*.5+(Math.random()*.1)).toFixed(2);
+        const fav = hOdds<aOdds ? f.home : f.away;
+        const favO = Math.min(hOdds,aOdds);
+        let conf = 50;
+        if (o25>=1.3&&o25<=1.8) conf+=15;
+        if (gf>.65) conf+=15;
+        if (favO<1.8) conf+=10;
+        if (hg>.65&&ag>.55) conf+=10;
+        conf = Math.min(95, conf);
+        return { id:`${f.home}-${f.away}-${f.date}`, home:f.home, away:f.away, date:f.date, time:f.time, o25, btts, fav, favO:+favO.toFixed(2), hRate:Math.round(hg*100), aRate:Math.round(ag*100), conf };
     });
-    renderTicker();
 }
 
-// Render news
-function renderNews() {
-    const grid = document.getElementById('newsGrid');
-    grid.innerHTML = newsItems.map(item => `
-        <div class="news-card">
-            <h3>${item.title}</h3>
-            <p>${item.summary}</p>
-            <div class="news-meta">
-                <span class="news-source">${item.source}</span>
-                <span>${item.time}</span>
-            </div>
+// ===========================================
+// STATE
+// ===========================================
+let tips = [];
+let selectedDays = 7;
+
+// ===========================================
+// DATE
+// ===========================================
+function fmtDate(ds) {
+    const today = new Date().toISOString().split('T')[0];
+    const tmrw = new Date(Date.now()+864e5).toISOString().split('T')[0];
+    if (ds===today) return 'Idag';
+    if (ds===tmrw) return 'Imorgon';
+    const d = new Date(ds+'T12:00:00');
+    return d.toLocaleDateString('sv-SE',{weekday:'short',day:'numeric',month:'short'});
+}
+
+// ===========================================
+// RENDER
+// ===========================================
+function renderTips() {
+    const tbody = document.getElementById('tipsBody');
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const end = new Date(now); end.setDate(end.getDate()+selectedDays);
+    const endStr = end.toISOString().split('T')[0];
+
+    let show = tips.filter(t => t.date>=todayStr && t.date<=endStr);
+
+    // "Nästa" = first matchday weekend only
+    if (selectedDays===7 && show.length>0) {
+        const first = show[0].date;
+        const next = new Date(first+'T12:00:00'); next.setDate(next.getDate()+1);
+        const nextStr = next.toISOString().split('T')[0];
+        show = show.filter(t => t.date===first || t.date===nextStr);
+    }
+
+    if (!show.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="muted center">Inga matcher hittades.</td></tr>';
+        document.getElementById('totalTips').textContent = '0';
+        return;
+    }
+
+    tbody.innerHTML = show.map(t => {
+        const cc = t.conf>=85?'conf-h':t.conf>=70?'conf-m':'conf-l';
+        const cl = t.conf>=85?'Hög':t.conf>=70?'Med':'Låg';
+        return `<tr>
+            <td class="date-cell">${fmtDate(t.date)}<b>${t.time}</b></td>
+            <td>${t.home} - ${t.away}</td>
+            <td><span class="odds odds-hl">${t.o25.toFixed(2)}</span></td>
+            <td><span class="odds">${t.btts.toFixed(2)}</span></td>
+            <td><span class="fav">${t.fav}</span> <span class="fav-odds">${t.favO.toFixed(2)}</span></td>
+            <td><span class="conf ${cc}">${cl} ${t.conf}%</span></td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('totalTips').textContent = show.length;
+    const avg = show.reduce((s,t)=>s+t.o25,0)/show.length;
+    document.getElementById('avgOdds').textContent = avg.toFixed(2);
+}
+
+const BONUSES = [
+    { n:'Betsson', b:'100% till 1000 kr', d:'Matchar insättning. 6x oms.', u:'https://betsson.com', r:5 },
+    { n:'Unibet', b:'100% till 500 kr', d:'Freebet vid förlust.', u:'https://unibet.se', r:5 },
+    { n:'Bet365', b:'Credits till 1000 kr', d:'Kvalificerande insättning.', u:'https://bet365.com', r:5 },
+    { n:'LeoVegas', b:'1000 kr freebet', d:'Vid förlust på första spelet.', u:'https://leovegas.se', r:4 },
+    { n:'ComeOn', b:'100% till 500 kr', d:'Första insättningsbonusen.', u:'https://comeon.com', r:4 },
+    { n:'888sport', b:'200 kr gratisspel', d:'Första kvalificerande spel.', u:'https://888sport.com', r:4 },
+];
+
+function renderBonuses() {
+    document.getElementById('bonusGrid').innerHTML = BONUSES.map(s => `
+        <div class="bonus-card">
+            <h3>${s.n}</h3>
+            <div class="amt">${s.b}</div>
+            <div class="desc">${s.d}</div>
+            <a href="${s.u}" target="_blank" rel="noopener" class="btn-bonus">Hämta</a>
         </div>
     `).join('');
 }
 
-// Apply filters
-applyFiltersBtn.addEventListener('click', applyFilters);
-
-function applyFilters() {
-    const maxFavoriteOdds = parseFloat(maxFavoriteOddsInput.value) || 1.93;
-    const maxBttsOdds = parseFloat(maxBttsOddsInput.value) || 1.70;
-    const maxOver25Odds = parseFloat(maxOver25OddsInput.value) || 1.70;
-    const minWinProb = parseFloat(minWinProbInput.value) || 50;
-    const requireInjuryAdvantage = filterInjuryAdvantage?.checked || false;
-    const requireH2HStreak = filterH2HStreak?.checked || false;
-
-    filteredMatches = upcomingMatches.filter(match => {
-        // Basic odds filters
-        if (match.favoriteOdds > maxFavoriteOdds) return false;
-        if (match.bttsOdds > maxBttsOdds) return false;
-        if (match.over25Odds > maxOver25Odds) return false;
-        if (match.winProb < minWinProb) return false;
-
-        // Injury advantage filter
-        if (requireInjuryAdvantage && match.injuryAdvantage !== match.favorite) {
-            return false;
-        }
-
-        // H2H streak filter
-        if (requireH2HStreak && match.h2hStreak !== match.favorite) {
-            return false;
-        }
-
-        return true;
-    });
-
-    // Sort by current sort settings
-    sortMatches();
-    renderMatches();
-    updateStats();
-}
-
-// Sort matches
-function sortMatches() {
-    filteredMatches.sort((a, b) => {
-        let valA, valB;
-
-        switch(sortColumn) {
-            case 'winProb':
-                valA = a.winProb;
-                valB = b.winProb;
-                break;
-            case 'btts':
-                valA = a.bttsProb;
-                valB = b.bttsProb;
-                break;
-            case 'over25':
-                valA = a.over25Prob;
-                valB = b.over25Prob;
-                break;
-            default:
-                valA = a.winProb;
-                valB = b.winProb;
-        }
-
-        return sortDirection === 'desc' ? valB - valA : valA - valB;
-    });
-}
-
-// Setup sorting
-function setupSorting() {
-    document.querySelectorAll('.sortable').forEach(th => {
-        th.addEventListener('click', () => {
-            const newSort = th.dataset.sort;
-            if (sortColumn === newSort) {
-                sortDirection = sortDirection === 'desc' ? 'asc' : 'desc';
-            } else {
-                sortColumn = newSort;
-                sortDirection = 'desc';
-            }
-            sortMatches();
-            renderMatches();
+function renderSaved() {
+    const el = document.getElementById('savedTipsBody');
+    const saves = getSaved();
+    if (!saves.length) { el.innerHTML='<tr><td colspan="5" class="muted center">Inga sparade tips.</td></tr>'; return; }
+    let html='';
+    saves.forEach(s => s.tips.forEach(t => {
+        const cls = t.result?(t.won?'win':'lose'):'';
+        const badge = t.result
+            ? `<span class="${t.won?'badge-win':'badge-lose'}">${t.won?'Vann':'Förlust'}</span>`
+            : '<span class="badge-wait">Väntar</span>';
+        html += `<tr class="${cls}">
+            <td>${new Date(t.savedAt).toLocaleDateString('sv-SE')}</td>
+            <td>${t.home||t.homeTeam} - ${t.away||t.awayTeam}</td>
+            <td>${(t.o25||t.over25Odds||0).toFixed?.(2)||'--'}</td>
+            <td>${t.result?`<b>${t.result}</b>`:`<input class="result-input" data-id="${t.matchId}" placeholder="2-1">`}</td>
+            <td>${badge}</td>
+        </tr>`;
+    }));
+    el.innerHTML = html;
+    el.querySelectorAll('.result-input').forEach(inp => {
+        inp.addEventListener('change', e => {
+            const r = e.target.value.trim();
+            if (!r.match(/^\d+-\d+$/)) { if(r) alert('Format: X-X'); return; }
+            const saves = getSaved();
+            saves.forEach(s => s.tips.forEach(t => {
+                if (t.matchId===e.target.dataset.id && !t.result) {
+                    t.result=r; const g=r.split('-').map(Number); t.totalGoals=g[0]+g[1]; t.won=t.totalGoals>2.5;
+                }
+            }));
+            setSaved(saves); renderSaved(); updateStats();
         });
     });
 }
 
-// Render matches table
-function renderMatches() {
-    if (filteredMatches.length === 0) {
-        matchesBody.innerHTML = `
-            <tr>
-                <td colspan="9" class="loading">No matches found with current filters. Try adjusting the criteria.</td>
-            </tr>
-        `;
-        return;
-    }
-
-    matchesBody.innerHTML = filteredMatches.map(match => {
-        const probClass = match.winProb >= 70 ? 'high' : match.winProb >= 55 ? 'medium' : 'low';
-
-        // Injury class
-        const getInjuryClass = (count) => count <= 2 ? 'low' : count <= 4 ? 'medium' : 'high';
-
-        // H2H display
-        const h2hDisplay = match.h2hRecord.length > 0
-            ? match.h2hRecord.map(r => `<span class="h2h-result ${r}">${r}</span>`).join('')
-            : '<span style="color: var(--text-muted)">-</span>';
-
-        // Probability boost indicator
-        const boostIndicator = match.winProb > match.originalWinProb
-            ? `<span style="color: var(--success); font-size: 10px; margin-left: 4px;">+${match.winProb - match.originalWinProb}%</span>`
-            : '';
-
-        return `
-            <tr class="${match.hasAdvantage ? 'has-advantage' : ''}">
-                <td>${formatDate(match.date)}</td>
-                <td>
-                    <div class="match-teams">
-                        <span class="team-home">${match.homeTeam}</span>
-                        <span class="team-vs">vs</span>
-                        <span class="team-away">${match.awayTeam}</span>
-                    </div>
-                </td>
-                <td>
-                    <span class="badge badge-primary">${match.favorite}</span>
-                    ${match.injuryAdvantage === match.favorite ? '<span class="advantage-badge injury" title="50% fewer injuries">🏥</span>' : ''}
-                    ${match.h2hStreak === match.favorite ? '<span class="advantage-badge h2h" title="H2H win streak">🔥</span>' : ''}
-                </td>
-                <td>
-                    <div class="prob-bar">
-                        <span class="prob-value">${match.winProb}%${boostIndicator}</span>
-                        <div class="prob-visual">
-                            <div class="prob-fill ${probClass}" style="width: ${match.winProb}%"></div>
-                        </div>
-                    </div>
-                </td>
-                <td><span class="odds ${match.favoriteOdds <= 1.6 ? 'good' : 'ok'}">${match.favoriteOdds.toFixed(2)}</span></td>
-                <td>
-                    <div class="injury-display">
-                        <span class="injury-count ${getInjuryClass(match.homeInjuries)}">${match.homeInjuries}</span>
-                        <span style="color: var(--text-muted)">vs</span>
-                        <span class="injury-count ${getInjuryClass(match.awayInjuries)}">${match.awayInjuries}</span>
-                    </div>
-                </td>
-                <td>
-                    <div class="h2h-display">${h2hDisplay}</div>
-                </td>
-                <td>
-                    <span class="badge ${match.bttsOdds <= 1.70 ? 'badge-success' : 'badge-warning'}">
-                        ${match.bttsOdds.toFixed(2)}
-                    </span>
-                </td>
-                <td>
-                    <span class="badge ${match.over25Odds <= 1.70 ? 'badge-success' : 'badge-warning'}">
-                        ${match.over25Odds.toFixed(2)}
-                    </span>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-// Update statistics
 function updateStats() {
-    totalMatchesEl.textContent = filteredMatches.length;
+    const saves = getSaved();
+    let all=[];
+    saves.forEach(s => { const c=new Date(); c.setDate(c.getDate()-30); if(new Date(s.savedAt)>=c) all.push(...s.tips); });
+    const done=all.filter(t=>t.result), wins=done.filter(t=>t.won);
+    const tot=done.length, w=wins.length;
+    document.getElementById('hitRate').textContent = tot?((w/tot*100).toFixed(1)+'%'):'0%';
+    let profit=0; done.forEach(t=>{ profit += t.won ? (t.o25||t.over25Odds||1.5)-1 : -1; });
+    const roi = tot?(profit/tot*100).toFixed(1):0;
+    document.getElementById('profitRate').textContent = `${roi>0?'+':''}${roi}%`;
 
-    if (filteredMatches.length > 0) {
-        const avgProb = filteredMatches.reduce((sum, m) => sum + m.winProb, 0) / filteredMatches.length;
-        avgWinProbEl.textContent = Math.round(avgProb) + '%';
-
-        const bttsQualified = filteredMatches.filter(m => m.bttsOdds <= 1.70).length;
-        bttsMatchesEl.textContent = bttsQualified;
-
-        const over25Qualified = filteredMatches.filter(m => m.over25Odds <= 1.70).length;
-        over25MatchesEl.textContent = over25Qualified;
-    } else {
-        avgWinProbEl.textContent = '0%';
-        bttsMatchesEl.textContent = '0';
-        over25MatchesEl.textContent = '0';
-    }
+    // 7d stats for history
+    let tips7=[]; saves.forEach(s=>{ const c=new Date(); c.setDate(c.getDate()-7); if(new Date(s.savedAt)>=c) tips7.push(...s.tips); });
+    const d7=tips7.filter(t=>t.result), w7=d7.filter(t=>t.won);
+    document.getElementById('historyTotal').textContent=d7.length;
+    document.getElementById('historyWins').textContent=w7.length;
+    document.getElementById('historyLosses').textContent=d7.length-w7.length;
+    let p7=0; d7.forEach(t=>{ p7+= t.won?(((t.o25||t.over25Odds||1.5)-1)*100):-100; });
+    document.getElementById('historyProfit').textContent=`${p7>0?'+':''}${Math.round(p7)} kr`;
 }
 
-// Render team statistics
-function renderTeamStats() {
-    const sortedTeams = Object.entries(teamStats)
-        .sort((a, b) => b[1].bttsRate - a[1].bttsRate)
-        .slice(0, 10);
-
-    teamStatsGrid.innerHTML = sortedTeams.map(([team, stats]) => `
-        <div class="team-stat-card">
-            <div class="team-info">
-                <span class="team-name">${team}</span>
-            </div>
-            <div class="team-stats">
-                <div class="team-stat">
-                    <div class="team-stat-value">${stats.bttsRate}%</div>
-                    <div class="team-stat-label">BTTS</div>
-                </div>
-                <div class="team-stat">
-                    <div class="team-stat-value">${stats.over25Rate}%</div>
-                    <div class="team-stat-label">O2.5</div>
-                </div>
-                <div class="team-stat">
-                    <div class="team-stat-value">${stats.homeWinRate}%</div>
-                    <div class="team-stat-label">Home Win</div>
-                </div>
-            </div>
-        </div>
-    `).join('');
+function refresh() {
+    const fixtures = generatePLFixtures();
+    tips = buildTips(fixtures);
+    renderTips();
+    renderSaved();
+    updateStats();
+    const now = new Date();
+    document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'});
 }
 
-// Helper functions
-function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short'
+// ===========================================
+// INIT
+// ===========================================
+document.addEventListener('DOMContentLoaded', () => {
+    refresh();
+    renderBonuses();
+
+    document.getElementById('refreshBtn').addEventListener('click', refresh);
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+        if (!tips.length) { alert('Inga tips!'); return; }
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const end = new Date(now); end.setDate(end.getDate()+selectedDays);
+        const endStr = end.toISOString().split('T')[0];
+        let show = tips.filter(t=>t.date>=todayStr&&t.date<=endStr);
+        if (selectedDays===7&&show.length) { const f=show[0].date; const n=new Date(f+'T12:00:00'); n.setDate(n.getDate()+1); show=show.filter(t=>t.date===f||t.date===n.toISOString().split('T')[0]); }
+        const data = { savedAt:now.toISOString(), savedAtDisplay:now.toLocaleString('sv-SE'), tips:show.map(t=>({...t,homeTeam:t.home,awayTeam:t.away,over25Odds:t.o25,matchId:`${t.home}-${t.away}-${t.date}`,savedAt:now.toISOString()})) };
+        const all=getSaved(); all.unshift(data); setSaved(all.slice(0,30));
+        // Notification
+        const n=document.createElement('div'); n.className='notif'; n.textContent=`${data.tips.length} tips sparade`; document.body.appendChild(n);
+        setTimeout(()=>n.classList.add('show'),10); setTimeout(()=>{n.remove()},2000);
+        renderSaved();
     });
-}
 
-function getConfidenceLevel(match) {
-    let score = 0;
-    if (match.winProb >= 70) score += 2;
-    else if (match.winProb >= 60) score += 1;
+    document.querySelectorAll('.date-btn').forEach(b => b.addEventListener('click', () => {
+        document.querySelectorAll('.date-btn').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        selectedDays = parseInt(b.dataset.days);
+        renderTips();
+    }));
 
-    if (match.favoriteOdds <= 1.60) score += 1;
-    if (match.bttsOdds <= 1.70 && match.bttsProb >= 60) score += 1;
-    if (match.over25Odds <= 1.70 && match.over25Prob >= 60) score += 1;
+    document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        const p = b.dataset.period;
+        const saves=getSaved(); let all=[];
+        saves.forEach(s=>{ if(p==='all'||(() => { const c=new Date(); c.setDate(c.getDate()-parseInt(p)); return new Date(s.savedAt)>=c; })()) all.push(...s.tips); });
+        const d=all.filter(t=>t.result), w=d.filter(t=>t.won);
+        document.getElementById('historyTotal').textContent=d.length;
+        document.getElementById('historyWins').textContent=w.length;
+        document.getElementById('historyLosses').textContent=d.length-w.length;
+        let pr=0; d.forEach(t=>{ pr+=t.won?(((t.o25||t.over25Odds||1.5)-1)*100):-100; });
+        document.getElementById('historyProfit').textContent=`${pr>0?'+':''}${Math.round(pr)} kr`;
+    }));
 
-    return Math.min(score, 5);
-}
+    document.getElementById('clearSavedBtn').addEventListener('click', () => {
+        if (confirm('Radera alla sparade tips?')) { localStorage.removeItem(CONFIG.storageKey); renderSaved(); updateStats(); }
+    });
 
-// Calculate win probability from odds (implied probability)
-function oddsToProb(odds) {
-    return Math.round((1 / odds) * 100);
-}
-
-// Future: Fetch real data from The Odds API
-async function fetchRealOdds() {
-    // API Key would go here
-    // const API_KEY = 'your-api-key';
-    // const response = await fetch(`https://api.the-odds-api.com/v4/sports/soccer_epl/odds/?apiKey=${API_KEY}&regions=eu&markets=h2h,totals,btts`);
-    // const data = await response.json();
-    // return data;
-    console.log('Real API integration ready - add API key to enable');
-}
+    setInterval(refresh, 5*60*1000);
+});
