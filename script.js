@@ -225,13 +225,17 @@ function updateStats() {
 }
 
 function refresh() {
-    const fixtures = generatePLFixtures();
-    tips = buildTips(fixtures);
-    renderTips();
-    renderSaved();
-    updateStats();
-    const now = new Date();
-    document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'});
+    const btn = document.getElementById('refreshBtn');
+    btn.classList.add('loading');
+    setTimeout(() => {
+        const fixtures = generatePLFixtures();
+        tips = buildTips(fixtures);
+        renderTips();
+        renderSaved();
+        updateStats();
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'});
+        btn.classList.remove('loading');
+    }, 600);
 }
 
 // ===========================================
