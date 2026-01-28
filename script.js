@@ -108,6 +108,27 @@ function fmtDate(ds) {
 // ===========================================
 // RENDER
 // ===========================================
+function getFilters() {
+    return {
+        o25Min: parseFloat(document.getElementById('over25Min')?.value) || 1.20,
+        o25Max: parseFloat(document.getElementById('over25Max')?.value) || 2.50,
+        bttsMax: parseFloat(document.getElementById('bttsMax')?.value) || 2.00,
+        favMin: parseFloat(document.getElementById('favMin')?.value) || 1.10,
+        favMax: parseFloat(document.getElementById('favMax')?.value) || 3.00,
+        minConf: parseInt(document.getElementById('minConf')?.value) || 0,
+    };
+}
+
+function applyFilters(list) {
+    const f = getFilters();
+    return list.filter(t =>
+        t.o25 >= f.o25Min && t.o25 <= f.o25Max &&
+        t.btts <= f.bttsMax &&
+        t.favO >= f.favMin && t.favO <= f.favMax &&
+        t.conf >= f.minConf
+    );
+}
+
 function renderTips() {
     const tbody = document.getElementById('tipsBody');
     const now = new Date();
@@ -124,6 +145,8 @@ function renderTips() {
         const nextStr = next.toISOString().split('T')[0];
         show = show.filter(t => t.date===first || t.date===nextStr);
     }
+
+    show = applyFilters(show);
 
     if (!show.length) {
         tbody.innerHTML = '<tr><td colspan="6" class="muted center">Inga matcher hittades.</td></tr>';
@@ -262,6 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(()=>n.classList.add('show'),10); setTimeout(()=>{n.remove()},2000);
         renderSaved();
     });
+
+    document.getElementById('applyFilters').addEventListener('click', () => renderTips());
 
     document.querySelectorAll('.date-btn').forEach(b => b.addEventListener('click', () => {
         document.querySelectorAll('.date-btn').forEach(x=>x.classList.remove('active'));

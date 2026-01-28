@@ -23,6 +23,15 @@
     </header>
 
     <main class="container">
+        <!-- Filters -->
+        <div class="filter-bar">
+            <label>Ö2.5 <input type="number" id="over25Min" value="1.20" step="0.05" min="1.01" max="3.00"> - <input type="number" id="over25Max" value="2.50" step="0.05" min="1.01" max="3.00"></label>
+            <label>BTTS max <input type="number" id="bttsMax" value="2.00" step="0.05" min="1.01" max="3.00"></label>
+            <label>Favorit <input type="number" id="favMin" value="1.10" step="0.05" min="1.01" max="5.00"> - <input type="number" id="favMax" value="3.00" step="0.05" min="1.01" max="5.00"></label>
+            <label>Min konf. <input type="number" id="minConf" value="0" step="5" min="0" max="100">%</label>
+            <button id="applyFilters" class="btn-green btn-sm">Filtrera</button>
+        </div>
+
         <!-- Stats -->
         <div class="stats-row">
             <div class="stat"><span class="stat-val" id="hitRate">0%</span><span class="stat-lbl">Träff 30d</span></div>
