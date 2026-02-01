@@ -3,110 +3,57 @@
 
 const CONFIG = {
     storageKey: 'spelexperter_saved_tips',
-    cacheKey: 'spelexperter_fixtures_cache',
-    // FootAPI7 config (RapidAPI)
-    apiKey: localStorage.getItem('spelexperter_api_key') || '',
-    apiHost: 'footapi7.p.rapidapi.com',
-    plTournamentId: 17, // Premier League unique tournament ID
+    cacheKey: 'spelexperter_fixtures_cache'
 };
 
 // ===========================================
-// FOOTAPI7 INTEGRATION
+// LIVE API INTEGRATION (via Vercel serverless)
 // ===========================================
 async function fetchLiveFixtures() {
-    if (!CONFIG.apiKey) {
-        console.log('No API key, using generated data');
-        return null;
-    }
-
-    // Check cache (10 min)
+    // Check cache (5 min)
     const cached = localStorage.getItem(CONFIG.cacheKey);
     if (cached) {
         const { data, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < 10 * 60 * 1000) {
+        if (Date.now() - timestamp < 5 * 60 * 1000) {
             console.log('Using cached fixtures');
             return data;
         }
     }
 
     try {
-        // Fetch next 14 days of matches
-        const allMatches = [];
-        const headers = {
-            'x-rapidapi-host': CONFIG.apiHost,
-            'x-rapidapi-key': CONFIG.apiKey
-        };
+        const response = await fetch('/api/matches');
 
-        for (let i = 0; i < 14; i++) {
-            const date = new Date(Date.now() + i * 24 * 60 * 60 * 1000);
-            const day = date.getDate();
-            const month = date.getMonth() + 1;
-            const year = date.getFullYear();
-
-            const response = await fetch(
-                `https://${CONFIG.apiHost}/api/matches/${day}/${month}/${year}`,
-                { headers }
-            );
-
-            if (!response.ok) continue;
-
-            const json = await response.json();
-
-            // Filter only Premier League (tournament ID 17)
-            const plMatches = (json.events || []).filter(e =>
-                e.tournament?.uniqueTournament?.id === CONFIG.plTournamentId
-            );
-
-            allMatches.push(...plMatches);
-
-            // Rate limit: max 2 requests per call to save quota
-            if (i >= 1) break;
+        if (!response.ok) {
+            console.error('API response not ok:', response.status);
+            return null;
         }
+
+        const json = await response.json();
+
+        if (!json.success || !json.matches) {
+            console.error('API error:', json.error);
+            return null;
+        }
+
+        console.log(`Fetched ${json.count} live matches`);
 
         // Cache results
         localStorage.setItem(CONFIG.cacheKey, JSON.stringify({
-            data: allMatches,
+            data: json.matches,
             timestamp: Date.now()
         }));
 
-        return allMatches;
+        return json.matches;
     } catch (err) {
         console.error('API fetch failed:', err);
         return null;
     }
 }
 
-async function fetchOddsForMatch(matchId) {
-    if (!CONFIG.apiKey) return null;
-
-    try {
-        const response = await fetch(
-            `https://${CONFIG.apiHost}/api/match/${matchId}/odds`,
-            {
-                headers: {
-                    'x-rapidapi-host': CONFIG.apiHost,
-                    'x-rapidapi-key': CONFIG.apiKey
-                }
-            }
-        );
-
-        if (!response.ok) return null;
-
-        const json = await response.json();
-        return json.markets || [];
-    } catch (err) {
-        return null;
-    }
-}
-
 function transformAPIFixtures(apiFixtures) {
     return apiFixtures.map(f => {
-        const home = f.homeTeam?.name || 'Home';
-        const away = f.awayTeam?.name || 'Away';
-        const timestamp = f.startTimestamp * 1000;
-        const dateObj = new Date(timestamp);
-        const date = dateObj.toISOString().split('T')[0];
-        const time = dateObj.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+        const home = f.home || 'Home';
+        const away = f.away || 'Away';
 
         // Calculate odds based on team strength
         const o25 = calculateO25Odds(home, away);
@@ -119,11 +66,8 @@ function transformAPIFixtures(apiFixtures) {
         const favO = Math.min(homeOdds, awayOdds);
 
         // Live status
-        const statusCode = f.status?.code;
-        const isLive = statusCode === 6 || statusCode === 7 || statusCode === 31; // 1H, 2H, HT
-        const homeScore = f.homeScore?.current ?? 0;
-        const awayScore = f.awayScore?.current ?? 0;
-        const score = isLive ? `${homeScore}-${awayScore}` : null;
+        const isLive = f.isLive || false;
+        const score = isLive ? `${f.homeScore}-${f.awayScore}` : null;
 
         // Confidence
         let conf = 50;
@@ -135,7 +79,9 @@ function transformAPIFixtures(apiFixtures) {
         return {
             id: `${f.id}`,
             fixtureId: f.id,
-            home, away, date, time,
+            home, away,
+            date: f.date,
+            time: f.time,
             o25: +o25.toFixed(2),
             btts: +btts.toFixed(2),
             fav,
@@ -143,7 +89,7 @@ function transformAPIFixtures(apiFixtures) {
             conf,
             isLive,
             score,
-            status: f.status?.description || ''
+            status: f.statusText || ''
         };
     });
 }
@@ -422,25 +368,24 @@ async function refresh() {
     btn.classList.add('loading');
 
     try {
-        // Try API first
+        // Try live API first
         const apiFixtures = await fetchLiveFixtures();
 
         if (apiFixtures && apiFixtures.length > 0) {
             tips = transformAPIFixtures(apiFixtures);
-            console.log(`Loaded ${tips.length} live fixtures from FootAPI7`);
+            console.log(`Loaded ${tips.length} live fixtures`);
+            document.getElementById('lastUpdate').textContent = `🔴 LIVE ${new Date().toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})}`;
         } else {
             // Fallback to generated data
             const fixtures = generatePLFixtures();
             tips = buildTips(fixtures);
             console.log('Using generated fixture data');
+            document.getElementById('lastUpdate').textContent = `📊 Demo ${new Date().toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})}`;
         }
 
         renderTips();
         renderSaved();
         updateStats();
-
-        const source = CONFIG.apiKey ? '🔴 LIVE' : '📊 Demo';
-        document.getElementById('lastUpdate').textContent = `${source} ${new Date().toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})}`;
 
     } catch (err) {
         console.error('Refresh error:', err);
@@ -448,6 +393,7 @@ async function refresh() {
         const fixtures = generatePLFixtures();
         tips = buildTips(fixtures);
         renderTips();
+        document.getElementById('lastUpdate').textContent = `⚠️ Offline ${new Date().toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})}`;
     }
 
     btn.classList.remove('loading');
@@ -457,40 +403,6 @@ async function refresh() {
 // INIT
 // ===========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // API Key management
-    const apiInput = document.getElementById('apiKeyInput');
-    const apiStatus = document.getElementById('apiStatus');
-    const saveApiBtn = document.getElementById('saveApiKey');
-
-    if (apiInput) {
-        // Load saved key
-        const savedKey = localStorage.getItem('spelexperter_api_key');
-        if (savedKey) {
-            apiInput.value = savedKey;
-            CONFIG.apiKey = savedKey;
-            apiStatus.textContent = '🔴 LIVE';
-            apiStatus.className = 'api-status active';
-        }
-
-        saveApiBtn?.addEventListener('click', () => {
-            const key = apiInput.value.trim();
-            if (key) {
-                localStorage.setItem('spelexperter_api_key', key);
-                CONFIG.apiKey = key;
-                apiStatus.textContent = '🔴 LIVE';
-                apiStatus.className = 'api-status active';
-                // Clear cache to force fresh fetch
-                localStorage.removeItem(CONFIG.cacheKey);
-                refresh();
-            } else {
-                localStorage.removeItem('spelexperter_api_key');
-                CONFIG.apiKey = '';
-                apiStatus.textContent = 'Demo-läge';
-                apiStatus.className = 'api-status inactive';
-            }
-        });
-    }
-
     refresh();
     renderBonuses();
 
@@ -539,7 +451,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confirm('Radera alla sparade tips?')) { localStorage.removeItem(CONFIG.storageKey); renderSaved(); updateStats(); }
     });
 
-    // Auto-refresh: 1 min if API active, 5 min if demo
-    const refreshInterval = CONFIG.apiKey ? 60*1000 : 5*60*1000;
-    setInterval(refresh, refreshInterval);
+    // Auto-refresh every 2 minutes
+    setInterval(refresh, 2*60*1000);
 });
