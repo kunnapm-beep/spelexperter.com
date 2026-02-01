@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "api/*.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "*.html",
       "use": "@vercel/static"
     },
@@ -10,11 +14,15 @@
       "use": "@vercel/static"
     },
     {
-      "src": "*.js",
+      "src": "script.js",
       "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/api/matches",
+      "dest": "/api/matches.js"
+    },
     {
       "src": "/(.*)",
       "dest": "/$1"
