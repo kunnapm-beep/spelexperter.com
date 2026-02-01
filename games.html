@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gratis Casinospel - SpelExperter.com</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(0,0,0,0.3);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffd700;
+        }
+
+        .logo span {
+            color: #fff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #ffd700;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #ffd700, #ffaa00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            color: #aaa;
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Bonus Banner */
+        .bonus-banner {
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            margin: 20px 40px;
+            padding: 20px 30px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .bonus-text h3 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .bonus-text p {
+            opacity: 0.9;
+        }
+
+        .bonus-btn {
+            background: #fff;
+            color: #ff6b35;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+
+        .bonus-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Category Tabs */
+        .categories {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cat-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            color: #fff;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cat-btn:hover, .cat-btn.active {
+            background: #ffd700;
+            color: #000;
+        }
+
+        /* Games Grid */
+        .games-container {
+            padding: 20px 40px 60px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .game-card {
+            background: linear-gradient(145deg, #252540, #1a1a30);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .game-thumb {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background: linear-gradient(45deg, #2a2a4a, #3a3a5a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .game-info {
+            padding: 15px;
+        }
+
+        .game-info h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .game-provider {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .game-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-demo {
+            flex: 1;
+            background: linear-gradient(90deg, #ffd700, #ffaa00);
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #000;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .btn-demo:hover {
+            opacity: 0.9;
+        }
+
+        .btn-real {
+            flex: 1;
+            background: linear-gradient(90deg, #00c853, #00e676);
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #000;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            font-size: 14px;
+            transition: opacity 0.3s;
+        }
+
+        .btn-real:hover {
+            opacity: 0.9;
+        }
+
+        /* Game Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 95%;
+            max-width: 1200px;
+            height: 85vh;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            color: #ffd700;
+        }
+
+        .close-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .game-frame {
+            width: 100%;
+            height: calc(100% - 70px);
+            border: none;
+            border-radius: 12px;
+            background: #000;
+        }
+
+        /* Real Money CTA in Modal */
+        .modal-cta {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, #00c853, #00e676);
+            padding: 12px 40px;
+            border-radius: 25px;
+            color: #000;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0,0,0,0.3);
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .footer-warning {
+            background: rgba(255,107,53,0.2);
+            border: 1px solid #ff6b35;
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .footer-warning p {
+            color: #ff6b35;
+            font-weight: 500;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #888;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: #ffd700;
+        }
+
+        .copyright {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .bonus-banner {
+                margin: 20px;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .games-container {
+                padding: 20px;
+            }
+
+            .games-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 15px;
+            }
+        }
+
+        /* Loading spinner */
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,215,0,0.3);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">Spel<span>Experter</span></div>
+        <nav class="nav-links">
+            <a href="/">Betting Tips</a>
+            <a href="/games" class="active">Gratis Spel</a>
+            <a href="/bonusar">Bonusar</a>
+            <a href="/om-oss">Om Oss</a>
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>🎰 Gratis Casinospel</h1>
+        <p>Spela demo-versioner av populära slots utan registrering. Testa strategier och ha kul - helt gratis!</p>
+    </section>
+
+    <!-- Bonus Banner -->
+    <div class="bonus-banner">
+        <div class="bonus-text">
+            <h3>🎁 Vill du spela på riktigt?</h3>
+            <p>Få 100% bonus upp till 5000 kr + 200 free spins hos våra partners!</p>
+        </div>
+        <a href="https://www.betsson.com/sv/?btag=a_XXXXX" target="_blank" rel="noopener" class="bonus-btn">Hämta Bonus →</a>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="categories">
+        <button class="cat-btn active" onclick="filterGames('all')">Alla Spel</button>
+        <button class="cat-btn" onclick="filterGames('popular')">🔥 Populära</button>
+        <button class="cat-btn" onclick="filterGames('megaways')">Megaways</button>
+        <button class="cat-btn" onclick="filterGames('classic')">Klassiska</button>
+        <button class="cat-btn" onclick="filterGames('jackpot')">💰 Jackpot</button>
+    </div>
+
+    <!-- Games Grid -->
+    <section class="games-container">
+        <div class="games-grid" id="games-grid">
+            <!-- Games will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Game Modal -->
+    <div class="modal" id="game-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">Loading...</h2>
+                <button class="close-btn" onclick="closeGame()">&times;</button>
+            </div>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+            </div>
+            <iframe class="game-frame" id="game-frame" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-warning">
+            <p>⚠️ 18+ | Spela ansvarsfullt | <a href="https://www.stodlinjen.se" target="_blank" style="color:#ff6b35;">Stödlinjen.se</a></p>
+        </div>
+        <div class="footer-links">
+            <a href="/villkor">Villkor</a>
+            <a href="/integritet">Integritetspolicy</a>
+            <a href="/ansvarsfullt-spelande">Ansvarsfullt Spelande</a>
+            <a href="/kontakt">Kontakt</a>
+        </div>
+        <p class="copyright">© 2025 SpelExperter.com - Martin Künnap. Alla demo-spel tillhör respektive spelutvecklare.</p>
+    </footer>
+
+    <script>
+        // Game database
+        const games = [
+            // Popular Pragmatic Play
+            {
+                id: 'vs20sweetbonanza',
+                name: 'Sweet Bonanza',
+                provider: 'Pragmatic Play',
+                category: ['popular', 'megaways'],
+                emoji: '🍬',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20sweetbonanza&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20olympgate',
+                name: 'Gates of Olympus',
+                provider: 'Pragmatic Play',
+                category: ['popular'],
+                emoji: '⚡',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20olympgate&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20doghouse',
+                name: 'The Dog House',
+                provider: 'Pragmatic Play',
+                category: ['popular'],
+                emoji: '🐕',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20doghouse&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs10bbbonanza',
+                name: 'Big Bass Bonanza',
+                provider: 'Pragmatic Play',
+                category: ['popular'],
+                emoji: '🐟',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs10bbbonanza&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20fruitparty',
+                name: 'Fruit Party',
+                provider: 'Pragmatic Play',
+                category: ['popular'],
+                emoji: '🍓',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20fruitparty&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20sugarrush',
+                name: 'Sugar Rush',
+                provider: 'Pragmatic Play',
+                category: ['popular'],
+                emoji: '🍭',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20sugarrush&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vswayshive',
+                name: 'Starlight Princess',
+                provider: 'Pragmatic Play',
+                category: ['popular', 'megaways'],
+                emoji: '👸',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20starlight&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20wolfgold',
+                name: 'Wolf Gold',
+                provider: 'Pragmatic Play',
+                category: ['jackpot', 'classic'],
+                emoji: '🐺',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs25wolfgold&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20rhinoluxe',
+                name: 'Great Rhino',
+                provider: 'Pragmatic Play',
+                category: ['classic'],
+                emoji: '🦏',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs25rhinoluxe&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20bonanzagold',
+                name: 'Bonanza Gold',
+                provider: 'Pragmatic Play',
+                category: ['popular'],
+                emoji: '💎',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20bonanzagold&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20wildbonus',
+                name: 'Wild West Gold',
+                provider: 'Pragmatic Play',
+                category: ['popular'],
+                emoji: '🤠',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs40wildwest&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20christmas',
+                name: 'Sweet Bonanza Xmas',
+                provider: 'Pragmatic Play',
+                category: ['popular'],
+                emoji: '🎄',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20sbxmas&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20mustanggold',
+                name: 'Mustang Gold',
+                provider: 'Pragmatic Play',
+                category: ['jackpot'],
+                emoji: '🐴',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs25mustang&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20vegasmagic',
+                name: 'Vegas Magic',
+                provider: 'Pragmatic Play',
+                category: ['classic'],
+                emoji: '🎲',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20vegasmagic&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs243fortune',
+                name: 'Fortune of Giza',
+                provider: 'Pragmatic Play',
+                category: ['classic'],
+                emoji: '🏛️',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs243fortune&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20olympx',
+                name: 'Gates of Olympus 1000',
+                provider: 'Pragmatic Play',
+                category: ['popular', 'megaways'],
+                emoji: '🌩️',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20olympx&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20zbonanza',
+                name: 'Sweet Bonanza 1000',
+                provider: 'Pragmatic Play',
+                category: ['popular'],
+                emoji: '🍫',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20zbonanza&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20doghousemh',
+                name: 'Dog House Megaways',
+                provider: 'Pragmatic Play',
+                category: ['megaways'],
+                emoji: '🐶',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vswaysdogs&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20jewelparty',
+                name: 'Gems Bonanza',
+                provider: 'Pragmatic Play',
+                category: ['popular'],
+                emoji: '💠',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20empcont&lang=sv&cur=EUR'
+            },
+            {
+                id: 'vs20piggybank',
+                name: 'Piggy Bank Bills',
+                provider: 'Pragmatic Play',
+                category: ['classic'],
+                emoji: '🐷',
+                demoUrl: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20piggybank&lang=sv&cur=EUR'
+            }
+        ];
+
+        // Affiliate link (replace XXXXX with your actual affiliate ID)
+        const affiliateLink = 'https://www.betsson.com/sv/casino/slots?btag=a_XXXXX';
+
+        // Render games
+        function renderGames(filter = 'all') {
+            const grid = document.getElementById('games-grid');
+            grid.innerHTML = '';
+
+            const filteredGames = filter === 'all'
+                ? games
+                : games.filter(g => g.category.includes(filter));
+
+            filteredGames.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.innerHTML = `
+                    <div class="game-thumb">${game.emoji}</div>
+                    <div class="game-info">
+                        <h3>${game.name}</h3>
+                        <p class="game-provider">${game.provider}</p>
+                        <div class="game-buttons">
+                            <button class="btn-demo" onclick="openGame('${game.id}', '${game.name}', '${game.demoUrl}')">Demo</button>
+                            <a href="${affiliateLink}" target="_blank" rel="noopener" class="btn-real">Spela →</a>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Filter games by category
+        function filterGames(category) {
+            // Update active button
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            renderGames(category);
+        }
+
+        // Open game modal
+        function openGame(id, name, url) {
+            const modal = document.getElementById('game-modal');
+            const frame = document.getElementById('game-frame');
+            const title = document.getElementById('modal-title');
+            const loading = document.getElementById('loading');
+
+            title.textContent = name;
+            loading.style.display = 'block';
+            frame.style.opacity = '0';
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            frame.src = url;
+
+            frame.onload = () => {
+                loading.style.display = 'none';
+                frame.style.opacity = '1';
+            };
+        }
+
+        // Close game modal
+        function closeGame() {
+            const modal = document.getElementById('game-modal');
+            const frame = document.getElementById('game-frame');
+
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            frame.src = '';
+        }
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeGame();
+        });
+
+        // Close on backdrop click
+        document.getElementById('game-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'game-modal') closeGame();
+        });
+
+        // Initial render
+        renderGames();
+    </script>
+
+</body>
+</html>
