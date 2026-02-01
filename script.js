@@ -4,15 +4,14 @@
 const CONFIG = {
     storageKey: 'spelexperter_saved_tips',
     cacheKey: 'spelexperter_fixtures_cache',
-    // API-Football config (RapidAPI)
+    // FootAPI7 config (RapidAPI)
     apiKey: localStorage.getItem('spelexperter_api_key') || '',
-    apiHost: 'v3.football.api-sports.io',
-    leagueId: 39, // Premier League
-    season: 2024
+    apiHost: 'footapi7.p.rapidapi.com',
+    plTournamentId: 17, // Premier League unique tournament ID
 };
 
 // ===========================================
-// API-FOOTBALL INTEGRATION
+// FOOTAPI7 INTEGRATION
 // ===========================================
 async function fetchLiveFixtures() {
     if (!CONFIG.apiKey) {
@@ -20,117 +19,111 @@ async function fetchLiveFixtures() {
         return null;
     }
 
-    // Check cache (15 min)
+    // Check cache (10 min)
     const cached = localStorage.getItem(CONFIG.cacheKey);
     if (cached) {
         const { data, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < 15 * 60 * 1000) {
+        if (Date.now() - timestamp < 10 * 60 * 1000) {
             console.log('Using cached fixtures');
             return data;
         }
     }
 
     try {
-        const today = new Date().toISOString().split('T')[0];
-        const endDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        // Fetch next 14 days of matches
+        const allMatches = [];
+        const headers = {
+            'x-rapidapi-host': CONFIG.apiHost,
+            'x-rapidapi-key': CONFIG.apiKey
+        };
 
-        const response = await fetch(
-            `https://${CONFIG.apiHost}/fixtures?league=${CONFIG.leagueId}&season=${CONFIG.season}&from=${today}&to=${endDate}`,
-            {
-                headers: {
-                    'x-apisports-key': CONFIG.apiKey
-                }
-            }
-        );
+        for (let i = 0; i < 14; i++) {
+            const date = new Date(Date.now() + i * 24 * 60 * 60 * 1000);
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
 
-        if (!response.ok) throw new Error('API error');
+            const response = await fetch(
+                `https://${CONFIG.apiHost}/api/matches/${day}/${month}/${year}`,
+                { headers }
+            );
 
-        const json = await response.json();
+            if (!response.ok) continue;
+
+            const json = await response.json();
+
+            // Filter only Premier League (tournament ID 17)
+            const plMatches = (json.events || []).filter(e =>
+                e.tournament?.uniqueTournament?.id === CONFIG.plTournamentId
+            );
+
+            allMatches.push(...plMatches);
+
+            // Rate limit: max 2 requests per call to save quota
+            if (i >= 1) break;
+        }
 
         // Cache results
         localStorage.setItem(CONFIG.cacheKey, JSON.stringify({
-            data: json.response,
+            data: allMatches,
             timestamp: Date.now()
         }));
 
-        return json.response;
+        return allMatches;
     } catch (err) {
         console.error('API fetch failed:', err);
         return null;
     }
 }
 
-async function fetchLiveOdds(fixtureIds) {
-    if (!CONFIG.apiKey || !fixtureIds.length) return {};
+async function fetchOddsForMatch(matchId) {
+    if (!CONFIG.apiKey) return null;
 
     try {
-        // Fetch odds for multiple fixtures (max 20 per request)
-        const ids = fixtureIds.slice(0, 20).join('-');
         const response = await fetch(
-            `https://${CONFIG.apiHost}/odds?fixture=${ids}&bookmaker=8`, // bet365
+            `https://${CONFIG.apiHost}/api/match/${matchId}/odds`,
             {
-                headers: { 'x-apisports-key': CONFIG.apiKey }
+                headers: {
+                    'x-rapidapi-host': CONFIG.apiHost,
+                    'x-rapidapi-key': CONFIG.apiKey
+                }
             }
         );
 
-        if (!response.ok) return {};
+        if (!response.ok) return null;
 
         const json = await response.json();
-        const oddsMap = {};
-
-        json.response?.forEach(item => {
-            const fixture = item.fixture?.id;
-            const markets = item.bookmakers?.[0]?.bets || [];
-
-            // Over 2.5 goals
-            const o25Market = markets.find(m => m.name === 'Goals Over/Under');
-            const o25 = o25Market?.values?.find(v => v.value === 'Over 2.5');
-
-            // BTTS
-            const bttsMarket = markets.find(m => m.name === 'Both Teams Score');
-            const btts = bttsMarket?.values?.find(v => v.value === 'Yes');
-
-            // Match Winner
-            const winnerMarket = markets.find(m => m.name === 'Match Winner');
-
-            if (fixture) {
-                oddsMap[fixture] = {
-                    o25: o25 ? parseFloat(o25.odd) : null,
-                    btts: btts ? parseFloat(btts.odd) : null,
-                    homeWin: winnerMarket?.values?.find(v => v.value === 'Home')?.odd,
-                    awayWin: winnerMarket?.values?.find(v => v.value === 'Away')?.odd
-                };
-            }
-        });
-
-        return oddsMap;
+        return json.markets || [];
     } catch (err) {
-        console.error('Odds fetch failed:', err);
-        return {};
+        return null;
     }
 }
 
-function transformAPIFixtures(apiFixtures, oddsMap = {}) {
+function transformAPIFixtures(apiFixtures) {
     return apiFixtures.map(f => {
-        const odds = oddsMap[f.fixture.id] || {};
-        const home = f.teams.home.name;
-        const away = f.teams.away.name;
-        const date = f.fixture.date.split('T')[0];
-        const time = new Date(f.fixture.date).toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+        const home = f.homeTeam?.name || 'Home';
+        const away = f.awayTeam?.name || 'Away';
+        const timestamp = f.startTimestamp * 1000;
+        const dateObj = new Date(timestamp);
+        const date = dateObj.toISOString().split('T')[0];
+        const time = dateObj.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
 
-        // Use API odds or fallback to calculated
-        const o25 = odds.o25 || calculateO25Odds(home, away);
-        const btts = odds.btts || calculateBTTSOdds(home, away);
+        // Calculate odds based on team strength
+        const o25 = calculateO25Odds(home, away);
+        const btts = calculateBTTSOdds(home, away);
 
         // Determine favorite
-        const homeOdds = odds.homeWin ? parseFloat(odds.homeWin) : calculateWinOdds(home);
-        const awayOdds = odds.awayWin ? parseFloat(odds.awayWin) : calculateWinOdds(away);
+        const homeOdds = calculateWinOdds(home);
+        const awayOdds = calculateWinOdds(away);
         const fav = homeOdds < awayOdds ? home : away;
         const favO = Math.min(homeOdds, awayOdds);
 
-        // Live score if available
-        const isLive = f.fixture.status.short === '1H' || f.fixture.status.short === '2H' || f.fixture.status.short === 'HT';
-        const score = isLive ? `${f.goals.home}-${f.goals.away}` : null;
+        // Live status
+        const statusCode = f.status?.code;
+        const isLive = statusCode === 6 || statusCode === 7 || statusCode === 31; // 1H, 2H, HT
+        const homeScore = f.homeScore?.current ?? 0;
+        const awayScore = f.awayScore?.current ?? 0;
+        const score = isLive ? `${homeScore}-${awayScore}` : null;
 
         // Confidence
         let conf = 50;
@@ -140,8 +133,8 @@ function transformAPIFixtures(apiFixtures, oddsMap = {}) {
         conf = Math.min(95, Math.max(30, conf + Math.floor(Math.random() * 10)));
 
         return {
-            id: `${f.fixture.id}`,
-            fixtureId: f.fixture.id,
+            id: `${f.id}`,
+            fixtureId: f.id,
             home, away, date, time,
             o25: +o25.toFixed(2),
             btts: +btts.toFixed(2),
@@ -150,7 +143,7 @@ function transformAPIFixtures(apiFixtures, oddsMap = {}) {
             conf,
             isLive,
             score,
-            status: f.fixture.status.short
+            status: f.status?.description || ''
         };
     });
 }
@@ -433,12 +426,8 @@ async function refresh() {
         const apiFixtures = await fetchLiveFixtures();
 
         if (apiFixtures && apiFixtures.length > 0) {
-            // Fetch live odds
-            const fixtureIds = apiFixtures.map(f => f.fixture.id);
-            const oddsMap = await fetchLiveOdds(fixtureIds);
-
-            tips = transformAPIFixtures(apiFixtures, oddsMap);
-            console.log(`Loaded ${tips.length} live fixtures from API`);
+            tips = transformAPIFixtures(apiFixtures);
+            console.log(`Loaded ${tips.length} live fixtures from FootAPI7`);
         } else {
             // Fallback to generated data
             const fixtures = generatePLFixtures();
